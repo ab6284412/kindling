@@ -34,6 +34,7 @@ Three pillars, one loop:
 
 ```
 pull.py                # news puller: HN, Lobsters, Anthropic, Algolia fallback
+                       #   digest subcommand: auto-summarize w/ local Ollama nano model
 tests/                 # offline regression tests for pull.py (live HTML fixtures)
 notes/                 # dated daily digests — these ROT, read once
 knowledge/             # evergreen news-lessons — the compounding part
@@ -103,8 +104,7 @@ sources. Rule of thumb:
    falsifiable sentence, one "based on" source).
 6. Update `followups.md` with anything new that needs re-testing.
 
-Save the digest: `python3 pull.py > notes/$(date +%F)-digest.md`. Run the
-regression check with `python3 -m unittest discover -s tests`.
+Run the regression check with `python3 -m unittest discover -s tests`.
 ## Scope & adapting it to you
 
 This repo ships scoped to a **junior backend developer (FastAPI/Python)**.

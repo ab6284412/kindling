@@ -32,7 +32,13 @@
       <span class="item-meta">{{ count }} files</span>
     </li>
     {% endfor %}
+    {% if latest_digest %}
     <li style="--i: {{ pillars|length }}">
+      <a class="item-link" href="/content/notes/{{ latest_digest }}">Latest digest</a>
+      <span class="item-meta">{{ latest_digest_date }}</span>
+    </li>
+    {% endif %}
+    <li style="--i: {{ pillars|length + 1 }}">
       <a class="item-link" href="/news">News ledger</a>
       <span class="item-meta">{{ news_count }} open</span>
     </li>

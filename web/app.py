@@ -61,6 +61,8 @@ def dashboard(request: Request):
             "reads_done": sum(1 for v in s["reads"].values() if v),
             "pillars": _pillar_counts(),
             "news_count": _news_count(),
+            "latest_digest": _latest_digest(),
+            "latest_digest_date": _latest_digest_date(),
         },
     )
 
@@ -72,6 +74,22 @@ def _pillar_counts() -> list[tuple[str, str, int]]:
 def _news_count() -> int:
     text = _read("news-ledger.md")
     return len(re.findall(r"(?m)^\|\s+\d{4}-", text))
+
+
+def _latest_digest() -> str | None:
+    """Path of the most recent notes/<date>-news-digest.md, or None."""
+    notes_dir = os.path.join(render.ROOT, "notes")
+    if not os.path.isdir(notes_dir):
+        return None
+    digests = sorted(
+        f for f in os.listdir(notes_dir) if f.endswith("-news-digest.md")
+    )
+    return digests[-1] if digests else None
+
+
+def _latest_digest_date() -> str | None:
+    d = _latest_digest()
+    return d[: -len("-news-digest.md")] if d else None
 
 
 @app.get("/learning", response_class=HTMLResponse)
