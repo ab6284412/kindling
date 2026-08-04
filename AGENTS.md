@@ -109,7 +109,7 @@ will fail a fixture test before it silently empties a digest.
 5. Mark provenance on the note (`AI-drafted` or `Human-written`).
 6. Save the artifact per its convention (digest/knowledge/concept/build/drill),
    keeping it concise and scannable.
-7. If the item signals a trend, add a falsifiable row to `predictions.md`.
+7. If the item signals a trend, add a falsifiable row to `news-ledger.md`.
 
 ### Interaction with the user
 - The user is a junior backend (FastAPI/Python) developer. Tailor explanations
@@ -148,8 +148,8 @@ will fail a fixture test before it silently empties a digest.
 - Hand-made full-concept exercises live in `builds/<thing>.md`; short
   lesson-specific reps live as a `## Drill` section embedded in the concept or
   knowledge note they practice.
-- `predictions.md` is the prediction ledger: every digest item that signals a
-  trend gets one falsifiable row there; rows get scored (held/failed/partial)
+- `news-ledger.md` is the news ledger: every digest item that signals a
+  trend gets one falsifiable row there; rows get scored (held/fizzled/partial)
   against evidence on review.
 - When a lesson can be practiced, write a `## Drill` section in the owning
   note: goal, steps, and a self-check the learner can run alone. A knowledge

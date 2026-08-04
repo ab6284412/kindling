@@ -10,7 +10,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Directories whose .md files are browseable through /content/<path>.
 BROWSE_DIRS = ("concepts", "knowledge", "notes", "builds", "dsa", "soft-skills")
-ROOT_FILES = ("learning.md", "predictions.md", "followups.md")
+ROOT_FILES = ("learning.md", "news-ledger.md", "followups.md")
 
 _md = markdown.Markdown(extensions=["fenced_code", "tables", "sane_lists"])
 

@@ -13,7 +13,7 @@ knowledge note and the drill for it. Small, focused PRs are the norm here.
    (see `concepts/`). This is the "textbook" pillar; the fastest high-value
    contribution.
 4. **Builds** — hand-made, full-concept exercises (see `builds/`).
-5. **Predictions** — falsifiable rows in `predictions.md`, or scores for open
+5. **News signals** — falsifiable rows in `news-ledger.md`, or scores for open
    rows with evidence.
 6. **Source fixes for `pull.py`** — sites change markup; if a parse breaks, add
    or refresh a fixture in `tests/fixtures/` and update `tests/test_pull.py`.

@@ -60,7 +60,7 @@ def dashboard(request: Request):
             "drills_done": sum(1 for v in s["drills"].values() if v),
             "reads_done": sum(1 for v in s["reads"].values() if v),
             "pillars": _pillar_counts(),
-            "prediction_count": _prediction_count(),
+            "news_count": _news_count(),
         },
     )
 
@@ -69,8 +69,8 @@ def _pillar_counts() -> list[tuple[str, str, int]]:
     return [(slug, title, len(render.list_content(slug))) for slug, title in PILLARS]
 
 
-def _prediction_count() -> int:
-    text = _read("predictions.md")
+def _news_count() -> int:
+    text = _read("news-ledger.md")
     return len(re.findall(r"(?m)^\|\s+\d{4}-", text))
 
 
@@ -123,15 +123,15 @@ def pillar(request: Request, pillar: str = ""):
     )
 
 
-@app.get("/predictions", response_class=HTMLResponse)
-def predictions(request: Request):
+@app.get("/news", response_class=HTMLResponse)
+def news(request: Request):
     return templates.TemplateResponse(
         request,
         "content.html",
         {
-            "path": "predictions.md",
-            "title": "Predictions ledger",
-            "html": render.render_markdown(_read("predictions.md")),
+            "path": "news-ledger.md",
+            "title": "News ledger",
+            "html": render.render_markdown(_read("news-ledger.md")),
             "is_drill": False,
             "is_readable": False,
             "state": state.load(),

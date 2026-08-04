@@ -14,7 +14,7 @@
   <div class="stat"><p class="stat-num tnum">{{ drills_done }}</p><p class="stat-label">drills done</p></div>
   <div class="stat"><p class="stat-num tnum">{{ reads_done }}</p><p class="stat-label">concepts read</p></div>
   <div class="stat"><p class="stat-num tnum">{{ state.notes|length }}</p><p class="stat-label">notes saved</p></div>
-  <div class="stat"><p class="stat-num tnum">{{ prediction_count }}</p><p class="stat-label">predictions logged</p></div>
+  <div class="stat"><p class="stat-num tnum">{{ news_count }}</p><p class="stat-label">news signals logged</p></div>
 </section>
 
 <section class="proof-room">
@@ -33,8 +33,8 @@
     </li>
     {% endfor %}
     <li style="--i: {{ pillars|length }}">
-      <a class="item-link" href="/predictions">Predictions ledger</a>
-      <span class="item-meta">{{ prediction_count }} open</span>
+      <a class="item-link" href="/news">News ledger</a>
+      <span class="item-meta">{{ news_count }} open</span>
     </li>
   </ul>
 </section>

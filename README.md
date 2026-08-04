@@ -29,8 +29,8 @@ Three pillars, one loop:
 2. **Builds + drills** (`builds/`, plus a `## Drill` section inside each
    concept/knowledge note) — the lab. Builds are full-concept, hand-made
    projects; drills are short lesson-specific reps.
-3. **News** (`notes/` + `predictions.md`) — the current-events pillar. Daily
-   digests that report *and* forecast; predictions get scored against reality.
+3. **News** (`notes/` + `news-ledger.md`) — the current-events pillar. Daily
+   digests that report *and* forecast; news signals get scored against reality.
 
 ```
 pull.py                # news puller: HN, Lobsters, Anthropic, Algolia fallback
@@ -46,10 +46,10 @@ soft-skills/           # communication, review, debugging discipline
 dsa/
   puzzles/             # interview puzzles with answers and self-checks
 learning.md            # the structured free curriculum + progress checkboxes
-predictions.md         # the prediction ledger (news → forecasts → scored)
+news-ledger.md          # the news ledger (news → trend signals → scored)
 followups.md           # standing tracker: what to re-test before citing again
 templates/             # skeletons for every artifact type
-CONTRIBUTING.md        # how to add a note, concept, build, or prediction
+CONTRIBUTING.md        # how to add a note, concept, build, or news signal
 ```
 
 The maps: `knowledge/README.md` (lesson → drill → stage) and
@@ -71,7 +71,7 @@ web/.venv/bin/uvicorn web.app:app --reload     # then open http://127.0.0.1:8000
 
 Routes: `/` dashboard, `/learning` stages, `/concepts` `/knowledge`
 `/notes` `/builds` `/dsa` `/soft-skills` `/content` list pages,
-`/predictions`, `/content/<path>` generic renderer, `POST /api/toggle` and
+`/news`, `/content/<path>` generic renderer, `POST /api/toggle` and
 `POST /api/note` (vanilla-JS, no reloads). Deps (`fastapi`, `uvicorn`,
 `jinja2`, `markdown`) are scoped to the app — the no-dependencies rule still
 holds for `pull.py` and the content. Tests:
@@ -96,7 +96,7 @@ sources. Rule of thumb:
    Check the source and the date; credit the author.
 3. Distill: for each item, write the transferable lesson — or skip the item.
 4. If a lesson can be practiced, write/extend a drill.
-5. For each item that signals a trend, add a row to `predictions.md` (one
+5. For each item that signals a trend, add a row to `news-ledger.md` (one
    falsifiable sentence, one "based on" source).
 6. Update `followups.md` with anything new that needs re-testing.
 
@@ -118,7 +118,7 @@ it yours:
 One concept per learning stage, a matching drill each, and a handful of news
 notes ship today. That's on purpose:
 the value is the *machine* — the workflow, templates, and the
-concept↔build↔drill↔prediction wiring — not the current content. Students grow
+concept↔build↔drill↔news-signal wiring — not the current content. Students grow
 the content by contributing, and contributing is itself a drill. See
 CONTRIBUTING.md.
 

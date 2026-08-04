@@ -5,7 +5,7 @@ it as fact. Authors credited per item; an item without a source is a rumor.
 
 ## <Source name (e.g. Hacker News front page)>
 - <Title> (<pts>) — <one-line what it is> — by <Author> (link)
-  - → Predicts: <what this signals for the industry — then add the row to predictions.md>
+  - → Signals a trend: <what this implies for the industry — then add the row to news-ledger.md>
 
 ## <Source name>
 - <...>

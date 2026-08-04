@@ -174,7 +174,7 @@ DSA + interview prep — patterns-first (NeetCode/Blind-75 style), the 13
 - Concepts are the textbook for each stage; builds prove a concept by hand.
 - Habit: after each digest, pick one news item and find which path stage teaches
   it (e.g. "Qwen speed vs quality" → stage 7, measure latency in your own API),
-  and add a falsifiable row to [predictions.md](predictions.md) when it signals
+  and add a falsifiable row to [news-ledger.md](news-ledger.md) when it signals
   a trend.
 
 ## Credit legend (▶N)
