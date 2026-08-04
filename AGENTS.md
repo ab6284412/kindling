@@ -67,10 +67,15 @@ first real pull: some sources need a specific parse, and some are hard-blocked.
 **Automation:** `python3 pull.py` in this folder implements the runbook — HN,
 Lobsters, Anthropic, the Algolia fallback (`python3 pull.py search "topic"`),
 and the blocked-source notes. Run it to seed a digest, then verify before
-citing. `python3 pull.py > notes/$(date +%F)-digest.md`. Only fetch manually
-when pull.py gives something unexpected. If a parser returns nothing, first
-run `python3 -m unittest discover -s tests` — a markup change at the source
-will fail a fixture test before it silently empties a digest.
+citing. `python3 pull.py > notes/$(date +%F)-digest.md`.
+`python3 pull.py digest` auto-summarizes the headlines with a local Ollama
+nano model (`llama3.2:1b`) and writes `notes/<date>-news-digest.md` with
+`## Further reading` URLs from the parsed links (Ollama must be running; if it
+isn't, the digest falls back to raw headlines and marks itself un-summarized).
+Only fetch manually when pull.py gives something unexpected. If a parser
+returns nothing, first run `python3 -m unittest discover -s tests` — a markup
+change at the source will fail a fixture test before it silently empties a
+digest.
 
 **Working (direct fetch + parse)**
 - Hacker News — fetch `news.ycombinator.com` front page HTML; story titles come

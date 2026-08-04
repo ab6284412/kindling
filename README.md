@@ -91,7 +91,10 @@ sources. Rule of thumb:
 
 ## The daily ritual (~20 min)
 
-1. `python3 pull.py` — seed a draft digest (HN, Lobsters, Anthropic).
+1. `python3 pull.py digest` — seed a digest auto-summarized by a local Ollama
+   nano model (`llama3.2:1b`, no API/auth). Writes `notes/<date>-news-digest.md`.
+   If Ollama isn't running it falls back to raw headlines. (Plain `python3
+   pull.py` still prints the raw digest to stdout.)
 2. **Verify before citing** — a headline is discussed, not necessarily true.
    Check the source and the date; credit the author.
 3. Distill: for each item, write the transferable lesson — or skip the item.
@@ -102,7 +105,6 @@ sources. Rule of thumb:
 
 Save the digest: `python3 pull.py > notes/$(date +%F)-digest.md`. Run the
 regression check with `python3 -m unittest discover -s tests`.
-
 ## Scope & adapting it to you
 
 This repo ships scoped to a **junior backend developer (FastAPI/Python)**.
