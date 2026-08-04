@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Learning path — Kindling{% endblock %}
+{% block content %}
+<h1 class="page-title">Learning path</h1>
+<p class="page-count">Five stages · tick a stage when its project is done</p>
+
+<ul class="stages">
+{% for name in stages %}
+  <li style="--i: {{ loop.index0 }}">
+    <label>
+      <input type="checkbox" class="toggle" data-kind="stage" data-path="{{ name }}"
+             {% if state.stages.get(name) %}checked{% endif %}>
+      {{ name }}
+    </label>
+  </li>
+{% endfor %}
+</ul>
+
+<details class="full-note">
+  <summary>Full curriculum notes</summary>
+  <div class="markdown">{{ html | safe }}</div>
+</details>
+{% endblock %}

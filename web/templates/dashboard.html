@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Home — Kindling{% endblock %}
+{% block content %}
+<section class="stat-hero">
+  <p class="figure tnum" data-count="{{ stages_done }}" aria-live="polite">
+    <span class="num">0</span><span class="unit">/{{ stages|length }}</span>
+  </p>
+  <h1 class="hero-line">stages of the backend path ticked. The rest are waiting for you.</h1>
+  <p class="qualifier">Tick a stage only when its project is built, tested, and reviewed — not when the videos end.</p>
+  <a class="cta-outline" href="/learning">Return to the path &rarr;</a>
+</section>
+
+<section class="supporting-stats">
+  <div class="stat"><p class="stat-num tnum">{{ drills_done }}</p><p class="stat-label">drills done</p></div>
+  <div class="stat"><p class="stat-num tnum">{{ reads_done }}</p><p class="stat-label">concepts read</p></div>
+  <div class="stat"><p class="stat-num tnum">{{ state.notes|length }}</p><p class="stat-label">notes saved</p></div>
+  <div class="stat"><p class="stat-num tnum">{{ prediction_count }}</p><p class="stat-label">predictions logged</p></div>
+</section>
+
+<section class="proof-room">
+  <p class="caps-label">A thought for today</p>
+  <blockquote id="quote-text" class="display-quote">“The mind is not a vessel to be filled, but a fire to be kindled.”</blockquote>
+  <p class="attribution" id="quote-attr">— Plutarch</p>
+</section>
+
+<section class="index" aria-label="Library">
+  <h2 class="section-title">The library</h2>
+  <ul class="items">
+    {% for slug, title, count in pillars %}
+    <li style="--i: {{ loop.index0 }}">
+      <a class="item-link" href="/{{ slug }}">{{ title }}</a>
+      <span class="item-meta">{{ count }} files</span>
+    </li>
+    {% endfor %}
+    <li style="--i: {{ pillars|length }}">
+      <a class="item-link" href="/predictions">Predictions ledger</a>
+      <span class="item-meta">{{ prediction_count }} open</span>
+    </li>
+  </ul>
+</section>
+{% endblock %}

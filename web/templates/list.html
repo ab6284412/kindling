@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} — Kindling{% endblock %}
+{% block content %}
+<h1 class="page-title">{{ title }}</h1>
+<p class="page-count">{{ items | length }} entries</p>
+
+<ul class="items">
+{% for item in items %}
+  <li style="--i: {{ loop.index0 }}">
+    <a class="item-link" href="/content/{{ item }}">{{ item.split('/')[-1][:-3].replace('-', ' ') }}</a>
+    <span class="item-meta">{{ item.split('/')[0] }}</span>
+    {% if pillar == 'drills' %}
+      <span class="pill done-pill {% if state.drills.get(item) %}on{% endif %}">done</span>
+    {% endif %}
+  </li>
+{% endfor %}
+</ul>
+{% endblock %}

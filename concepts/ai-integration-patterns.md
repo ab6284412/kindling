@@ -1,0 +1,63 @@
+# AI integration patterns
+Created 2026-08-03 · Last verified 2026-08-03
+Provenance: AI-drafted · Credits: roadmap.sh, Anthropic docs, OpenAI docs, Model Context Protocol docs
+
+## What it is
+
+The roadmap's integration-patterns step — the *reliable* ways to connect a
+backend to LLMs: **streaming, structured outputs, function calling,
+retrieval (RAG, vectors, embeddings), and agent tooling (MCP, skills,
+agents)**.
+
+## The concepts
+
+- **Streaming** — return tokens as they're generated (SSE/TCP) so the user
+  sees progress instead of waiting for the whole answer.
+- **Structured outputs** — make the model return validated JSON/shape
+  (constrained decoding or schema-validated post-processing) so your code
+  can parse it safely.
+- **Function calling** — the model emits a *call* to a function you define;
+  your code executes it and feeds results back. The primitive behind agents.
+- **Embeddings** — turn text into a vector so "similarity" becomes vector
+  distance; the input to RAG.
+- **Vectors** — the representation and the storage (pgvector, vector DBs).
+- **RAGs (retrieval-augmented generation)** — fetch relevant documents
+  first (via embeddings), stuff them into the prompt, so the model answers
+  from *your* data instead of its training. Grounds answers, cuts
+  hallucination, adds provenance.
+- **MCP (Model Context Protocol)** — an open protocol for giving models
+  access to tools/data sources; how agents reach external systems.
+- **Skills / Agents** — skills are packaged capabilities; agents are loops
+  (model → tool call → observation → next step) that act until done.
+
+## How it works
+
+The through-line: LLMs are unstructured and stochastic, so *you* add the
+structure — validate inputs, constrain outputs, ground answers in
+retrieved data, and turn reasoning into callable functions. Every pattern
+here is a way of making a probability machine behave like a contract.
+
+## How it fails (review checklist)
+
+- **Raw model output parsed as JSON** — one stray token breaks it; use
+  structured outputs or validate+retry.
+- **RAG without evaluation** — retrieval quality is a metric, not a vibe;
+  test top-k relevance before trusting answers.
+- **Agents without guardrails** — an agent loop can call tools in a loop,
+  spend money, or do damage; cap iterations and scope tool permissions.
+- **Streaming as an afterthought** — long generations feel dead without it;
+  latency UX matters (see `knowledge/time-to-thought.md`).
+
+## Build that proves it
+
+No build yet. The drill: one endpoint that streams a model's answer, with
+the prompt constructed from an embedding search over a small document set
+(RAG), and a structured-output JSON contract on the reply.
+
+## Further reading
+- roadmap.sh, https://roadmap.sh/backend — "Integration Patterns" step
+  (fetched Aug 3 2026)
+- Model Context Protocol docs, https://modelcontextprotocol.io/ (fetched
+  Aug 3 2026)
+- OpenAI docs, https://platform.openai.com/docs (fetched Aug 3 2026)
+- Anthropic docs, https://docs.anthropic.com/en/docs (fetched Aug 3 2026)

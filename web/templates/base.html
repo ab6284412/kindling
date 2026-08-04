@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Kindling{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Sans:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="nav-mast">
+  <p class="mast-line">Kindling · A fire to be kindled · 2026</p>
+  <p class="mast-name"><a class="wordmark-link{% if request.url.path == '/' %} is-active{% endif %}" href="/" {% if request.url.path == '/' %}aria-current="page"{% endif %}>KINDLING</a></p>
+  <nav class="mast-nav" aria-label="Primary">
+    <details class="mast-menu">
+      <summary>Menu</summary>
+      <ul>
+        <li><a href="/" {% if request.url.path == '/' %}class="is-active" aria-current="page"{% endif %}>Home</a></li>
+        <li><a href="/learning" {% if request.url.path == '/learning' %}class="is-active" aria-current="page"{% endif %}>Learning path</a></li>
+        <li><a href="/concepts" {% if request.url.path == '/concepts' %}class="is-active" aria-current="page"{% endif %}>Concepts</a></li>
+        <li><a href="/knowledge" {% if request.url.path == '/knowledge' %}class="is-active" aria-current="page"{% endif %}>Knowledge</a></li>
+        <li><a href="/notes" {% if request.url.path == '/notes' %}class="is-active" aria-current="page"{% endif %}>Notes</a></li>
+        <li><a href="/predictions" {% if request.url.path == '/predictions' %}class="is-active" aria-current="page"{% endif %}>Predictions</a></li>
+        <li><a href="/dsa" {% if request.url.path == '/dsa' %}class="is-active" aria-current="page"{% endif %}>DSA prep</a></li>
+        <li><a href="/soft-skills" {% if request.url.path == '/soft-skills' %}class="is-active" aria-current="page"{% endif %}>Soft skills</a></li>
+      </ul>
+    </details>
+  </nav>
+  <hr class="mast-rule" aria-hidden="true">
+</header>
+<main>
+{% block content %}{% endblock %}
+</main>
+<footer class="foot-mast">
+  <p class="wordmark"><a class="wordmark-link{% if request.url.path == '/' %} is-active{% endif %}" href="/" {% if request.url.path == '/' %}aria-current="page"{% endif %}>Kindling</a></p>
+  <p class="tagline">Notes, drills, and a path through the fundamentals.</p>
+  <p class="links">Backend · Python · FastAPI — a learning workspace</p>
+</footer>
+<script src="/static/app.js"></script>
+</body>
+</html>

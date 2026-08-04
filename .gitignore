@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+notes/<date>-digest.md
+state.json
+web/.venv/
+.DS_Store
+.playwright-mcp/
+.hallmark/
