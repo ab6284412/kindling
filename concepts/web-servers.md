@@ -47,6 +47,52 @@ FastAPI `web/` app — terminate TLS with a self-signed cert, proxy `/` to the
 app, serve a static file directly from Nginx, and observe the `X-Forwarded-*`
 headers your app sees.
 
+## Drill
+
+Goal: prove a reverse proxy forwards the request to a backend — it doesn't
+answer from its own cache — using only stdlib `http.server`.
+
+Steps:
+1. From a scratch dir, save this as `proxy.py` and run `python3 proxy.py`
+   (stdlib only):
+   ```python
+   import json, threading, urllib.request
+   from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+   class B(BaseHTTPRequestHandler):              # the "app"
+       def do_GET(self):
+           print(f"[backend] got: {self.command} {self.path}", flush=True)
+           body = json.dumps({"app": "backend"}).encode()
+           self.send_response(200)
+           self.send_header("Content-Type", "application/json")
+           self.end_headers(); self.wfile.write(body)
+       def log_message(self, *a): pass
+   class P(BaseHTTPRequestHandler):              # the "web server"
+       def do_GET(self):
+           print(f"[proxy] received {self.path}, forwarding...", flush=True)
+           r = urllib.request.urlopen(f"http://127.0.0.1:8001{self.path}")
+           body = r.read()
+           self.send_response(200)
+           self.send_header("Content-Type", "application/json")
+           self.end_headers(); self.wfile.write(body)
+       def log_message(self, *a): pass
+   threading.Thread(target=lambda: ThreadingHTTPServer(("127.0.0.1", 8001), B).serve_forever(),
+                    daemon=True).start()
+   ThreadingHTTPServer(("127.0.0.1", 8124), P).serve_forever()
+   ```
+2. From a second terminal: `curl -s http://127.0.0.1:8124/ping`.
+3. Read the `proxy.py` terminal output.
+
+Self-check (pass/fail — run it alone):
+- The terminal prints a `[backend] got: GET /ping` line — the request really
+  reached the app; the front door didn't fake the answer.
+- `curl` prints `{"app": "backend"}`.
+- Ctrl-C the proxy and rerun curl: it fails to connect — no backend behind
+  the front door means no answer at all.
+
+Why this matters: Nginx in front of FastAPI is exactly this shape — the web
+server terminates and forwards; your app owns the response, and the two are
+not the same process.
+
 ## Further reading
 - roadmap.sh, https://roadmap.sh/backend — "Learn about Web Servers" step
   (fetched Aug 3 2026)

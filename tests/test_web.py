@@ -151,5 +151,51 @@ class TestLinkify(unittest.TestCase):
         self.assertIn('href="nope.md"', html)
 
 
+class TestRoutes(unittest.TestCase):
+    """Exercise the FastAPI app over TestClient — guards the portal fixes."""
+
+    @classmethod
+    def setUpClass(cls):
+        from fastapi.testclient import TestClient
+        from web.app import app
+
+        cls.client = TestClient(app)
+
+    def test_dashboard_renders(self):
+        r = self.client.get("/")
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("Learning path", r.text)
+        self.assertIn("stages", r.text)
+
+    def test_content_strips_drill_and_renders_fence(self):
+        # concepts/caching.md has a ## Drill and a list-nested code fence; the
+        # content route must hide the drill section and render the fence.
+        r = self.client.get("/content/concepts/caching.md")
+        self.assertEqual(r.status_code, 200)
+        self.assertNotIn("<h2>Drill", r.text)
+        self.assertIn("<pre><code", r.text)
+        self.assertNotIn("```", r.text)
+
+    def test_content_rejects_traversal(self):
+        r = self.client.get("/content/../state.json")
+        self.assertEqual(r.status_code, 404)
+
+    def test_toggle_drill_only_accepts_drills(self):
+        ok = self.client.post("/api/toggle", json={"kind": "drill", "path": "concepts/caching.md"})
+        self.assertEqual(ok.status_code, 200)
+        # learning.md has no ## Drill -> must be rejected.
+        bad = self.client.post("/api/toggle", json={"kind": "drill", "path": "learning.md"})
+        self.assertEqual(bad.status_code, 400)
+        # put the state back
+        self.client.post("/api/toggle", json={"kind": "drill", "path": "concepts/caching.md"})
+
+    def test_xss_scrubbed_on_content(self):
+        # Render an HTML/JS payload through the markdown pipeline directly.
+        html = render.render_markdown('hello <script>alert(1)</script> [x](javascript:alert(2))')
+        self.assertNotIn("<script", html)
+        self.assertNotIn("javascript:", html)
+        self.assertIn("&lt;script", html)
+
+
 if __name__ == "__main__":
     unittest.main()

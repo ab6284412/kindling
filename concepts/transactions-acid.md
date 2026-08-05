@@ -49,15 +49,18 @@ acronym for these guarantees: **Atomicity, Consistency, Isolation, Durability**
 
 ## Build that proves it
 
-No build yet (this pass is concepts + drills). Short rep: the `## Drill`
-below.
+The storage-cache build proves it — [builds/storage-cache.md](../builds/storage-cache.md)
+(atomic writes + a rollback proof). Short rep: the `## Drill` below.
 
 ## Drill
 
 Goal: see atomicity and isolation with your own eyes using stdlib SQLite.
 
 Steps:
-1. From a scratch dir, run `python3` (stdlib `sqlite3` — no installs):
+1. From a scratch dir, run `python3` (stdlib `sqlite3` — no installs). If a
+   previous run left a `tx.db` in this dir, delete it first (`rm tx.db`) or the
+   `CREATE TABLE` dies with `sqlite3.OperationalError: table acct already
+   exists`:
    ```python
    import sqlite3
    c = sqlite3.connect("tx.db")

@@ -44,6 +44,62 @@ No build yet. The drill: wrap one external call in your app with a circuit
 breaker (or a hand-rolled "fail after 3 errors, retry in 5s" check), break
 the dependency, and show the app degrades instead of hanging.
 
+## Drill
+
+Goal: prove a hand-rolled circuit breaker stops calling a failing dependency
+and recovers after a cooldown — stdlib only.
+
+Steps:
+1. From a scratch dir, save this as `breaker.py` and run `python3 breaker.py`
+   (stdlib only):
+   ```python
+   import time
+   class Breaker:
+       def __init__(self, threshold=3, open_seconds=5):
+           self.threshold, self.open_seconds = threshold, open_seconds
+           self.failures, self.opened_at = 0, None
+       def call(self, fn):
+           if self.opened_at is not None:
+               if time.time() - self.opened_at < self.open_seconds:
+                   raise RuntimeError("circuit OPEN — fail fast, no dep call")
+               self.failures, self.opened_at = 0, None   # half-open: retry once
+           try:
+               r = fn()
+               self.failures = 0
+               return r
+           except Exception:
+               self.failures += 1
+               if self.failures >= self.threshold:
+                   self.opened_at = time.time()
+               raise
+   calls = 0
+   def flaky():
+       global calls
+       calls += 1
+       raise ConnectionError("dep down")
+   b = Breaker()
+   for _ in range(3):
+       try: b.call(flaky)
+       except ConnectionError: pass
+   for _ in range(2):
+       try: b.call(flaky)
+       except RuntimeError as e: print(e)
+   print(f"dependency calls = {calls} (must be 3)")
+   ```
+2. Read the output.
+
+Self-check (pass/fail — run it alone):
+- Prints `dependency calls = 3` — after the 3rd failure the circuit opened;
+  calls 4 and 5 raised `RuntimeError` without touching the dependency (the
+  two printed "circuit OPEN" lines are the proof).
+- Set `open_seconds=1`, add `time.sleep(1.2)` after the third failure, and
+  the next `b.call(flaky)` is a half-open retry that fails with
+  `ConnectionError` again — the breaker tried again instead of staying shut.
+
+Why this matters: without a breaker every request waits on a dead
+dependency and your threads pile up; with one you fail fast and give the
+dependency time to recover.
+
 ## Further reading
 - Sriniously, "Backend Scaling and Performance Part-1/2" (▶21, ▶22) — https://www.youtube.com/watch?v=z7kt_p44rjs, https://www.youtube.com/watch?v=sOhAopEwjH4 (Dec 14, Dec 28 2025)
 - roadmap.sh, https://roadmap.sh/backend — "Building For Scale" step

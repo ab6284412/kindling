@@ -52,8 +52,8 @@ errors into something you can reason about.
 
 ## Build that proves it
 
-No build yet (this pass is concepts + drills). Short rep: the `## Drill`
-below.
+The stage-1 CLI todo app proves it — [builds/python-from-zero.md](../builds/python-from-zero.md).
+Short rep: the `## Drill` below.
 
 ## Drill
 

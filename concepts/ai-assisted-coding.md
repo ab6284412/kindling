@@ -49,6 +49,37 @@ The `## Drill` in [retype-generated-code.md](../knowledge/retype-generated-code.
 take AI-generated code, find its
 failure modes by reading it, and fix them from a spec.
 
+## Drill
+
+Goal: generate a FastAPI login endpoint with an AI assistant, then audit the
+draft against the checklist in `web-security.md` and prove it can't merge
+unreviewed.
+
+Steps:
+1. Prompt whatever AI tool you have (editor assistant, Claude Code, or local
+   Ollama — nothing paid): "Write a FastAPI endpoint POST /login that takes a
+   username and password, looks the user up, and returns a token. FastAPI +
+   SQLite. Keep it short."
+2. Run the draft, then review it line by line against the checklist in
+   `web-security.md` — hunt for: string-concatenated SQL /
+   `execute(f"...")`, plaintext or MD5/SHA password comparison instead of a
+   slow salted hash, a hardcoded or guessable token, `*` CORS, and no
+   rate-limiting on the login route.
+3. Fix each flaw you find, one at a time, re-running the endpoint after each.
+
+Self-check (pass/fail — run it alone):
+- You find **at least one** real flaw on the first draft; name the OWASP
+  class it belongs to (injection, broken auth, misconfiguration, ...) and the
+  file/line. If the draft was clean, your review wasn't adversarial enough —
+  ask for "minimal lines, cut corners if needed" to provoke one.
+- After your fixes, the endpoint returns 401 for a wrong password with a
+  timing-safe comparison, and you can state in one sentence what you changed
+  and why.
+
+Why this matters: AI output is plausible-by-default; the review gate is the
+only thing standing between a confident-looking draft and a `web-security.md`
+checklist violation in prod.
+
 ## Further reading
 - roadmap.sh, https://roadmap.sh/backend — "AI Assisted Coding" step
   (fetched Aug 3 2026)

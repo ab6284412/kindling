@@ -62,6 +62,39 @@ stdlib Python. Parsing the request line, sending correct status lines and
 `Content-Length`, and handling malformed input is the fastest way to internalize
 this model.
 
+## Drill
+
+Goal: write an HTTP request by hand over a raw socket and read the exact wire
+format the response comes back in.
+
+Steps:
+1. stdlib `socket`. In one `python3` session:
+   ```python
+   import socket
+   s = socket.create_connection(("example.com", 80))
+   s.sendall(b"GET / HTTP/1.1\r\nHost: example.com\r\nConnection: close\r\n\r\n")
+   data = b""
+   while chunk := s.recv(4096):
+       data += chunk
+   print(data.decode()[:600])
+   ```
+2. Read the output: first line is the status line (`HTTP/1.1 200 OK`), then
+   headers, then a blank line, then the body. You hand-wrote the request line,
+   the headers, and the terminating blank line — that is the protocol.
+3. Break it: change the version to `HTTP/9.9` and re-run. The server replies
+   with an error status (e.g. `505 HTTP Version Not Supported`) — it parsed
+   your request line and rejected the version.
+
+Self-check (pass/fail):
+- Step 1's output starts with `HTTP/1.1 200 OK`, and the body is separated
+  from the headers by a blank line.
+- Step 3 returns a `5xx`/error status — you can name the line the server
+  rejected (the request line) and why (unknown HTTP version).
+- You can hand-write a minimal valid request from memory right after.
+
+Why this matters: every framework sits on this exact byte format; when a client
+and server disagree, the fight is over these bytes.
+
 ## Further reading
 - Sriniously, "Understanding HTTP for backend engineers" (▶5) — https://www.youtube.com/watch?v=a3C1DMswClQ (Sep 27, 2024)
 - RFC 9110 (HTTP Semantics) — R. Fielding, M. Nottingham, J. Reschke,

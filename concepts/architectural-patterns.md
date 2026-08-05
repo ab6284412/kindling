@@ -49,6 +49,41 @@ No build yet. The drill: take the roadmap's twelve-factor list and score an
 existing app of yours (this `web/` app counts) against all twelve factors,
 one by one.
 
+## Drill
+
+Goal: prove twelve-factor's "config in env vars" by running one unchanged
+script under three different environments. Stdlib only.
+
+Steps:
+1. Save this as `config_drill.py`:
+   ```python
+   import os
+   def db_url():
+       return os.environ.get("DATABASE_URL", "postgres://localhost/dev")
+   def main():
+       print("connecting to", db_url())
+   if __name__ == "__main__":
+       main()
+   ```
+2. Run it three ways without editing the file:
+   ```bash
+   python3 config_drill.py
+   DATABASE_URL=postgres://prod-eu python3 config_drill.py
+   DATABASE_URL=postgres://staging python3 config_drill.py
+   ```
+3. Now write the "hardcoded" version: replace `db_url()` with
+   `return "postgres://localhost/dev"` and re-run the three commands — the
+   second and third now connect to the wrong database silently.
+
+Self-check (pass/fail — run it alone): the three env-var runs print three
+*different* URLs from the same file (pass), and the hardcoded version prints
+the same URL for all three even when `DATABASE_URL` is set (fail — that's the
+twelve-factor violation made visible). You passed if you can say which app
+runs on a second machine.
+
+Why this matters: config baked into code is why "it works on my machine" —
+env-var config is what lets the same image deploy to dev, staging, and prod.
+
 ## Further reading
 - roadmap.sh, https://roadmap.sh/backend — "Architectural Patterns" step
   (fetched Aug 3 2026)

@@ -40,6 +40,33 @@ git core; the differentiator is the workflow tooling around it.
 Create a repo, add a collaborator, and take one PR through review to merge
 with a working CI check. That's the whole drill.
 
+## Drill
+
+Goal: reproduce the "push before pull" rejection and the linear-rebase fix
+with two local clones sharing one bare remote.
+
+Steps:
+1. Dependency: git. In a scratch dir: `git init --bare remote.git`, then
+   `git clone remote.git alice` and `git clone remote.git bob`.
+2. In `alice`: create `a.txt`, `git add .`, `git commit -m a`, `git push`.
+3. In `bob`: create `b.txt`, commit, and try `git push` — it is rejected
+   (`! [rejected] ... non-fast-forward`, "fetch first") because alice pushed a
+   commit bob doesn't have.
+4. In `bob`: `git pull --rebase`, then `git push`. Run `git log --oneline` —
+   alice's commit is there and the history is one linear line (rebase, not a
+   merge commit).
+
+Self-check (pass/fail):
+- Step 3 prints the `[rejected]`/`fetch first` message — you reproduced the
+  failure the note warns about.
+- After step 4, `git log --oneline` in `bob` contains alice's commit and
+  `git push` succeeds.
+- You can explain why `git push --force` on a shared branch is the danger the
+  note calls out: it would discard alice's commit instead of rebasing onto it.
+
+Why this matters: PR/review workflows live on a shared remote; push-before-pull
+and force-push are the failures that waste a review cycle.
+
 ## Further reading
 - roadmap.sh, https://roadmap.sh/backend — "Repo Hosting Services" step
   (fetched Aug 3 2026)

@@ -42,9 +42,61 @@ not the caching.
 
 ## Build that proves it
 
-No build yet. The drill: add `Cache-Control` + `ETag` to one of your
-FastAPI endpoints, verify the browser revalidates, then add a Redis cache
-for your slowest query and prove the second call skips the DB.
+The storage-cache build proves the cache-with-invalidation half —
+[builds/storage-cache.md](../builds/storage-cache.md) (a cache layer whose writes
+stay coherent, evicted on every write). A real Redis cache — add one for your
+slowest query and prove the second call skips the DB — remains an extension
+there.
+
+## Drill
+
+Goal: prove cache hits skip recomputation, that invalidation (`cache_clear`)
+is what keeps a stale value fresh, and that eviction drops the oldest entry.
+Stdlib only (`functools.lru_cache`).
+
+Steps:
+1. Save this as `cache_drill.py`:
+   ```python
+   from functools import lru_cache
+
+   source = {"price": 10}
+   calls = 0
+
+   @lru_cache(maxsize=2)
+   def get_price():
+       global calls
+       calls += 1
+       return source["price"]
+
+   print(get_price(), "calls:", calls)        # miss -> 1
+   print(get_price(), "calls:", calls)        # hit  -> still 1
+   source["price"] = 12                        # source of truth changes
+   print("after truth change:", get_price(), "calls:", calls)  # STALE
+   get_price.cache_clear()                     # invalidation
+   print("after invalidate:", get_price(), "calls:", calls)    # fresh -> 2
+
+   @lru_cache(maxsize=2)
+   def slow(k):
+       return k * 10
+   for k in range(4):
+       slow(k)                                # 4 distinct keys, cap of 2
+   print("after 4 keys:", slow.cache_info())  # currsize=2, misses=4
+   slow(0)                                    # key 0 was evicted -> miss again
+   print("after re-get 0:", slow.cache_info())  # misses becomes 5
+   ```
+2. Run `python3 cache_drill.py`.
+
+Self-check (pass/fail — run it alone): the second `get_price()` call leaves
+`calls` at 1 (hit), the value stays `10` even after the source changes to 12
+(stale), and only after `cache_clear()` does it return `12` with `calls` at 2.
+The eviction proof is `cache_info()`: after 4 keys with `maxsize=2`,
+`currsize` is capped at 2 — and re-getting key 0 increments `misses` from 4 to
+5, proving it was dropped from the cache. If `calls` ever increments on a
+repeated key, your cache isn't caching.
+
+Why this matters: caching is easy; invalidation is the hard half — a stale
+price cached forever is worse than no cache, and this is the same miss/hit/
+evict logic Redis runs under a different API.
 
 ## Further reading
 - Sriniously, "Caching, the secret behind it all" (▶13) — https://www.youtube.com/watch?v=estH64OkwxU (Mar 5, 2025)

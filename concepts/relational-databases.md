@@ -38,8 +38,53 @@ ACID-friendly, the default choice for most business data.
 
 ## Build that proves it
 
-No build yet. This workspace's stage 2 (freeCodeCamp Relational Database
-cert) is the deep practice.
+The storage-cache build proves it — [builds/storage-cache.md](../builds/storage-cache.md).
+This workspace's stage 5 (freeCodeCamp Relational Database cert) is the deep
+practice.
+
+## Drill
+
+Goal: prove foreign keys and constraints are enforced by the database, not the
+app — and that the same bad write succeeds when enforcement is off. Stdlib
+only.
+
+Steps:
+1. Save this as `fk_drill.py`:
+   ```python
+   import sqlite3
+
+   c = sqlite3.connect(":memory:")
+   c.execute("PRAGMA foreign_keys=ON")
+   c.execute("CREATE TABLE users(id INTEGER PRIMARY KEY, name TEXT)")
+   c.execute("""CREATE TABLE orders(
+       id INTEGER PRIMARY KEY,
+       user_id INTEGER REFERENCES users(id),
+       total REAL)""")
+   c.execute("INSERT INTO users VALUES (1, 'alice')")
+
+   try:
+       c.execute("INSERT INTO orders VALUES (1, 999, 10.0)")  # no user 999
+       print("BAD: orphan order accepted")
+   except sqlite3.IntegrityError:
+       print("GOOD: orphan order rejected")
+
+   c.execute("INSERT INTO orders VALUES (1, 1, 10.0)")
+   print(c.execute(
+       "SELECT o.total, u.name FROM orders o JOIN users u ON o.user_id = u.id"
+   ).fetchone())
+   ```
+2. Run `python3 fk_drill.py`.
+3. Remove the `PRAGMA foreign_keys=ON` line and re-run.
+
+Self-check (pass/fail — run it alone): with the pragma on, the orphan insert
+prints `GOOD: orphan order rejected` and the join returns `(10.0, 'alice')`;
+with the pragma off, the orphan insert *succeeds* and the join shows no row
+for it — the same app code, different integrity. You passed when you can say
+why the constraint belongs in the schema, not in your Python.
+
+Why this matters: schema-first enforcement is the database doing its one job —
+constraints catch bad data at the trust boundary, where the app layer would
+just silently store it.
 
 ## Further reading
 - Sriniously, "Mastering Databases with Postgres" (▶12) — https://www.youtube.com/watch?v=F7Vwp2Xo5Do (Mar 3, 2025)

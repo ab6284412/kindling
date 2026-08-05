@@ -38,6 +38,35 @@ No git drill yet. The test: recreate a botched history —
 commit a secret, remove it, and rewrite history to purge it from every
 commit — and explain the hash chain while doing it.
 
+## Drill
+
+Goal: see the staging model, content-addressed storage, and a safe rewind with
+your own git repo.
+
+Steps:
+1. In a scratch dir: `git init`, `printf 'v1\n' > a.txt`, `git add a.txt`,
+   `git commit -m v1`.
+2. Append a second line to `a.txt` and create `b.txt`. Stage only `a.txt`
+   (`git add a.txt`) and run `git status --short` — you should see `M  a.txt`
+   (staged) and `?? b.txt` (untracked). Commit, then `git log --oneline`
+   shows two commits.
+3. Undo the second commit safely: `git revert HEAD --no-edit`, then `cat a.txt`
+   and `git log --oneline` — the file is back to one line but history gained a
+   commit (nothing rewritten).
+4. Content addressing: `printf 'hi\n' > c1.txt && printf 'hi\n' > c2.txt`,
+   `git add .`, then `git ls-files -s` — c1.txt and c2.txt share the same blob
+   hash, because identical content hashes to the same object.
+
+Self-check (pass/fail):
+- Step 2's `git status --short` shows exactly `M  a.txt` and `?? b.txt` — you
+  can tell staged from untracked.
+- After `git revert`, `a.txt` has one line, `git log --oneline` grew by one,
+  and you can explain why this is safer than `git reset` on a shared branch.
+- `git ls-files -s` lists c1.txt and c2.txt with the same hash.
+
+Why this matters: "commit everything with `git add .`" and unsafe history
+rewrites are the two classic junior failures this drill makes visible.
+
 ## Further reading
 - roadmap.sh, https://roadmap.sh/backend — "Version Control Systems" step
   (fetched Aug 3 2026)

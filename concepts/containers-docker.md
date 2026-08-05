@@ -64,9 +64,9 @@ deps all ship inside the image.
 
 ## Build that proves it
 
-No build yet — planned: a `Dockerfile` that containerizes *this* web app
-(learning.md stage 5, dogfooding the workspace product). Short rep: the
-`## Drill` below.
+Proven by [builds/production-deploy.md](../builds/production-deploy.md): a `Dockerfile`
+that containerizes *this* web app (learning.md stage 7, dogfooding the
+workspace product). Short rep: the `## Drill` below.
 
 ## Drill
 
@@ -111,8 +111,27 @@ Self-check (pass/fail — run it alone):
   compiled wheels can fail to install).
 
 Why this matters: the Dockerfile you just wrote is the same shape as the one
-that will containerize this repo's web app (planned stage-5 build) and nearly
+that will containerize this repo's web app (stage-7 build) and nearly
 every production Python API you'll deploy.
+
+## Kubernetes and container orchestration
+
+A single Docker host gives you containers; orchestration is what you need
+when containers must run across a *cluster* of machines:
+
+- **What orchestration adds** — scheduling (which host runs which container),
+  self-healing (a dead container is restarted elsewhere), and scaling across
+  hosts (more replicas when load grows). Docker alone runs one machine; k8s
+  runs the fleet.
+- **Core ideas** — a **Deployment** declares the desired state (image, replica
+  count); a **Pod** is the smallest unit — one or more containers sharing a
+  network; a **Service** is the stable name/load-balancer in front of a set of
+  pods. You describe the goal, and the control plane converges reality to it.
+- **When a junior backend needs it** — much production Python now actually
+  runs on k8s, so being able to read a Deployment/Service manifest is table
+  stakes at larger companies; but Docker-only is fine to learn first. The
+  Dockerfile you already wrote is the exact artifact k8s consumes, and the
+  concepts here (images, ports, healthchecks) transfer directly.
 
 ## Further reading
 - Docker, https://docs.docker.com/build/building/base-images/ — "Base images",
@@ -120,3 +139,5 @@ every production Python API you'll deploy.
 - Docker Community, https://hub.docker.com/_/python — "python — Official
   Image", Docker Hub (fetched Aug 3 2026; current tags e.g. `3.14.6-slim`,
   `3.14.6-alpine3.24`)
+- Kubernetes, https://kubernetes.io/docs/concepts/overview/what-is-kubernetes/ —
+  "What is Kubernetes", Kubernetes docs (fetched Aug 5 2026)

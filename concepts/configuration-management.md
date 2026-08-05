@@ -35,6 +35,37 @@ kept out of source control. Sriniously's ▶17 covers it.
 [builds/production-deploy.md](../builds/production-deploy.md) — externalize DB URL + secret via
 env, load into a typed settings object, and validate at startup before serving.
 
+## Drill
+
+Goal: prove config comes from the environment (not code) and a missing
+required knob fails fast at boot — stdlib only.
+
+Steps:
+1. From a scratch dir, save this as `settings.py`:
+   ```python
+   import os
+   DB_URL = os.getenv("DB_URL", "sqlite:///dev.db")
+   PORT = int(os.getenv("PORT", "8000"))
+   API_KEY = os.getenv("API_KEY")          # no default: required
+   if not API_KEY:
+       raise SystemExit("API_KEY not set — refusing to boot")
+   print(f"booted with DB_URL={DB_URL} PORT={PORT}")
+   ```
+2. Run it twice, same file, different output:
+   - `PORT=9000 API_KEY=x python3 settings.py`
+   - `API_KEY=x python3 settings.py`
+3. Prove the fail-fast: `python3 settings.py` with no `API_KEY`.
+
+Self-check (pass/fail — run it alone):
+- The first run prints `PORT=9000`, the second prints `PORT=8000` — the code
+  never changed, only the environment did.
+- Without `API_KEY` the process exits non-zero with the "refusing to boot"
+  message *before* printing the "booted" line — it never serves half-configured.
+
+Why this matters: 12-factor config means no code changes per environment and
+no half-configured servers — every knob lives in the env/compose file, and a
+missing one fails at boot, not on the first request.
+
 ## Further reading
 - Sriniously, "Production-grade Configuration Management" (▶17) — https://www.youtube.com/watch?v=GR9NtirPXyc (Jul 24, 2025)
 - 12-factor config — https://12factor.net/config (referenced by ▶17; fetched Aug 4 2026)

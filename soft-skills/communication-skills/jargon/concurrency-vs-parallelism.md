@@ -1,6 +1,7 @@
 # Concurrency vs. parallelism
 
 Provenance: AI-drafted
+Credits: Sriniously (@sriniously), roadmap.sh, Mozilla Contributors
 
 Related: [builds/background-worker.md](../../../builds/background-worker.md), [concepts/real-time-data.md](../../../concepts/real-time-data.md)
 

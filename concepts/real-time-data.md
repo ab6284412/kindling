@@ -48,6 +48,51 @@ No build yet. The drill: serve a live-updating counter to a page three
 ways — short polling, SSE, and WebSockets — and measure the latency and
 connection count of each.
 
+## Drill
+
+Goal: prove server-push (SSE) delivers events without the client polling,
+using only stdlib `http.server` and `urllib`.
+
+Steps:
+1. From a scratch dir, save this as `sse.py` and run `python3 sse.py`
+   (stdlib only):
+   ```python
+   import time
+   from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+   class H(BaseHTTPRequestHandler):
+       def do_GET(self):
+           if self.path != "/events":
+               self.send_error(404); return
+           self.send_response(200)
+           self.send_header("Content-Type", "text/event-stream")
+           self.end_headers()
+           for i in range(3):
+               self.wfile.write(f"data: tick {i}\n\n".encode())
+               self.wfile.flush()
+               time.sleep(1)
+       def log_message(self, *a): pass
+   ThreadingHTTPServer(("127.0.0.1", 8123), H).serve_forever()
+   ```
+2. In a second terminal, read the stream — the client has *no* loop and no
+   timer, it just blocks on the socket:
+   ```python
+   import urllib.request
+   for line in urllib.request.urlopen("http://127.0.0.1:8123/events"):
+       print(line.decode().strip())
+   ```
+3. Watch the client print `data: tick 0`, `1`, `2` one per second with zero
+   client-side polling code — the server pushed, the client waited.
+
+Self-check (pass/fail — run it alone):
+- The client prints three `data: tick N` lines, one per second, with a single
+  `urlopen` call and no `while` loop.
+- Kill the server mid-stream: the client raises `ConnectionResetError` — it
+  learns the stream ended only because the *connection* died, not because a
+  poll returned empty.
+
+Why this matters: SSE is the cheap way to push updates over plain HTTP; if
+you can hold a connection you never need to poll your own API.
+
 ## Further reading
 - roadmap.sh, https://roadmap.sh/backend — "Real-Time Data" step
   (fetched Aug 3 2026)

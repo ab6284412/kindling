@@ -21,10 +21,16 @@ def load() -> dict:
             data = json.load(f)
     except (ValueError, OSError):
         return default_state()
+    if not isinstance(data, dict):
+        return default_state()
     state = default_state()
     for key in state:
         if isinstance(data.get(key), dict):
             state[key] = data[key]
+    # Normalize legacy string-valued notes to the list shape the UI expects.
+    for path, note in list(state["notes"].items()):
+        if not isinstance(note, list):
+            state["notes"][path] = [str(note)]
     return state
 
 

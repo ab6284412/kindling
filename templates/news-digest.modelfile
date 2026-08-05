@@ -1,0 +1,18 @@
+# Guardrail model for the news-digest pipeline.
+# Build once:  ollama create kindling-news-digest -f templates/news-digest.modelfile
+# Use via:      ollama run kindling-news-digest "<prompt>"
+#
+# It is ONLY allowed to regroup the headlines it is handed into sections.
+# It must NOT fabricate URLs, authors, claims, or extra content. Anything not
+# explicitly requested below is refused.
+FROM llama3.2:1b
+TEMPLATE """{{ .System }}
+Summarize ONLY the headlines listed below. Do not invent authors, URLs,
+claims, or details. Keep each bullet to one line, max 12 words. Group into
+markdown sections by topic. If you cannot do this from the given input,
+stop and say so; do not make anything up.
+
+Headlines:
+{{ .Prompt }}"""
+PARAMETER temperature 0.3
+PARAMETER num_ctx 2048

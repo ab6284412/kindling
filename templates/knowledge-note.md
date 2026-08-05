@@ -1,7 +1,5 @@
 # <Topic — one clear noun phrase, not a headline>
-Created <YYYY-MM-DD> · Last verified <YYYY-MM-DD>
-Provenance: AI-drafted | Human-written
-Credits: <human author(s) of the underlying source article(s)>
+Created <YYYY-MM-DD> · Last verified <YYYY-MM-DD> · Provenance: AI-drafted | Human-written · Credits: <human author(s) of the underlying source article(s)>
 
 ## Summary
 What happened, who, when, key numbers. Facts only — this note must stand alone

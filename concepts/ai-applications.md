@@ -21,7 +21,7 @@ refactoring** with AI help. The "how to ship AI features" track.
 ## How it works
 
 Your backend wraps a provider API: validate input → build the prompt →
-call the model → validate output (see `integration-patterns.md` for the
+call the model → validate output (see `ai-integration-patterns.md` for the
 shipping half: streaming, structured outputs, function calling, RAG). The
 app's job is to be a *reliable* client of an *unreliable, stochastic*
 dependency.
@@ -42,6 +42,50 @@ dependency.
 The drill embedded in [time-to-thought.md](../knowledge/time-to-thought.md) —
 measure TTFT/quality tradeoffs across
 models for one task. That's the hands-on rep for this step.
+
+## Drill
+
+Goal: prove your app survives a stochastic model — it validates and retries
+model output instead of trusting it — using a fake model, stdlib only.
+
+Steps:
+1. From a scratch dir, save this as `client.py` and run `python3 client.py`:
+   ```python
+   import json, re
+   calls = 0
+   def fake_model(prompt):          # stand-in for an LLM: flaky output
+       global calls
+       calls += 1
+       if calls % 2 == 0:
+           return "Sure! " + json.dumps({"sentiment": "positive", "score": 0.9})
+       return "Here is the result: not valid json"
+   def parse(raw):                  # your reliability layer
+       m = re.search(r"\{.*\}", raw, re.S)
+       return json.loads(m.group(0))
+   def complete(prompt, retries=3): # validate + retry
+       for _ in range(retries):
+           raw = fake_model(prompt)
+           try:
+               return parse(raw)
+           except (json.JSONDecodeError, AttributeError):
+               print(f"[retry] unparseable model output: {raw!r}")
+       raise RuntimeError("model kept failing — say so, don't guess")
+   print(complete("classify this review"))
+   print(f"model calls = {calls} (>=2: we retried, we didn't crash)")
+   ```
+2. Read the output.
+3. Change `retries=1` and rerun.
+
+Self-check (pass/fail — run it alone):
+- First run prints `model calls = 2` and the parsed dict — the unparseable
+  first attempt was retried, not propagated as a crash.
+- With `retries=1` it raises `RuntimeError` — degraded but with a clean
+  error, never a bare `json.JSONDecodeError` leaking into your endpoint.
+- Swap `fake_model` for your real provider call; the wrapper is unchanged.
+
+Why this matters: an LLM is a probability engine, not a contract — your
+app's job is validation, retry, and graceful failure, exactly like any
+flaky third-party API.
 
 ## Further reading
 - roadmap.sh, https://roadmap.sh/backend — "Applications" step (fetched

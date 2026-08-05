@@ -15,14 +15,16 @@ Add a note per pattern; list it below in the order you intend to study it —
 3. [hashing.md](hashing.md) — trading space for time
 4. [two-pointers.md](two-pointers.md) — shrinking the search space
 5. [sliding-window.md](sliding-window.md) — contiguous subarrays in O(n)
-6. [stack-queue.md](stack-queue.md) — LIFO/FIFO and the deque trap
-7. [binary-search.md](binary-search.md) — halving the search space
-8. [linked-lists.md](linked-lists.md) — pointer surgery and dummy nodes
-9. [recursion-backtracking.md](recursion-backtracking.md) — try, undo, try again
-10. [trees.md](trees.md) — binary trees, BSTs, traversals
-11. [heaps.md](heaps.md) — priority queues and top-K
-12. [graphs.md](graphs.md) — adjacency lists, BFS, DFS
-13. [dynamic-programming.md](dynamic-programming.md) — recursion plus a cache
+6. [intervals.md](intervals.md) — sort-then-sweep for overlapping ranges
+7. [stack-queue.md](stack-queue.md) — LIFO/FIFO and the deque trap
+8. [binary-search.md](binary-search.md) — halving the search space
+9. [linked-lists.md](linked-lists.md) — pointer surgery and dummy nodes
+10. [recursion-backtracking.md](recursion-backtracking.md) — try, undo, try again
+11. [trees.md](trees.md) — binary trees, BSTs, traversals
+12. [heaps.md](heaps.md) — priority queues and top-K
+13. [graphs.md](graphs.md) — adjacency lists, BFS, DFS
+14. [greedy.md](greedy.md) — locally optimal choices, globally optimal answer
+15. [dynamic-programming.md](dynamic-programming.md) — recursion plus a cache
 
 ## Puzzles
 

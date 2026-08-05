@@ -3,7 +3,7 @@
 
 Usage:
     python3 pull.py                          # HN + Lobsters + Anthropic (+ OpenAI re-test)
-    python3 pull.py > notes/$(date +%F)-digest.md   # seed a daily digest
+    python3 pull.py > notes/$(date +%F)-news-digest.md   # seed a daily digest
     python3 pull.py digest                   # auto-summarize w/ local Ollama nano model
                                              #   -> notes/<date>-news-digest.md (needs ollama running)
     python3 pull.py search "qwen"            # HN Algolia fallback for blocked sites
@@ -123,15 +123,51 @@ def collect():
     return out
 
 
+_REPO = os.path.dirname(os.path.abspath(__file__))
+GUARDRAIL_MODEL = "kindling-news-digest"
+
+
+def _has_model(name: str) -> bool:
+    try:
+        out = subprocess.run(
+            ["ollama", "list"], capture_output=True, text=True, timeout=15
+        ).stdout
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return name in out
+
+
+def _guardrail_model() -> str:
+    """Use the pinned guardrail model if built; else fall back to base llama3.2:1b."""
+    return GUARDRAIL_MODEL if _has_model(GUARDRAIL_MODEL) else "llama3.2:1b"
+
+
+def _ensure_guardrail_model() -> None:
+    """Best-effort: build the guardrail model from templates/news-digest.modelfile."""
+    if _has_model(GUARDRAIL_MODEL):
+        return
+    modelfile = os.path.join(_REPO, "templates", "news-digest.modelfile")
+    if not os.path.isfile(modelfile):
+        return
+    try:
+        subprocess.run(
+            ["ollama", "create", GUARDRAIL_MODEL, "-f", modelfile],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+    except (OSError, subprocess.SubprocessError):
+        pass
+
+
 ANSI = re.compile(r"\x1b\[[0-9;?]*[a-zA-Z]")
 
 
-def summarize_headlines(titles: list[str], model: str = "llama3.2:1b") -> str:
+def summarize_headlines(titles: list[str], model: str | None = None) -> str:
     """Pipe titles into a local Ollama model; return its digest skeleton."""
-    prompt = (
-        "Group these tech-news headlines into sections by topic (one headline "
-        "per bullet, keep the title). Use markdown headers. Max 12 words per "
-        "bullet.\n\n" + "\n".join(f"- {t}" for t in titles)
+    model = model or _guardrail_model()
+    prompt = "Group these headlines into short sections, one line per bullet:\n\n" + "\n".join(
+        f"- {t}" for t in titles
     )
     try:
         proc = subprocess.run(
@@ -147,9 +183,10 @@ def summarize_headlines(titles: list[str], model: str = "llama3.2:1b") -> str:
     return ANSI.sub("", proc.stdout.strip())
 
 
-def write_digest(data: dict, model: str = "llama3.2:1b", summarize=None) -> str:
+def write_digest(data: dict, model: str | None = None, summarize=None) -> str:
     """Summarize collected headlines with a local nano model and write the note."""
     summarize = summarize or summarize_headlines
+    model = model or _guardrail_model()
     today = date.today()
     notes_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "notes")
     os.makedirs(notes_dir, exist_ok=True)
@@ -191,6 +228,11 @@ def write_digest(data: dict, model: str = "llama3.2:1b", summarize=None) -> str:
                 continue
             seen.add(url)
             lines.append(f"- {title} — {url} ({today.strftime('%b %-d, %Y')})")
+    lines.append("")
+    lines.append(
+        "Links above are parsed directly from the source pages, never generated "
+        f"by the model ({model})."
+    )
     lines += [
         "",
         "## Open questions",
@@ -210,6 +252,7 @@ def main() -> int:
         return 0
 
     if len(sys.argv) > 1 and sys.argv[1] == "digest":
+        _ensure_guardrail_model()
         data = collect()
         for name in data["failed"]:
             print(f"warning: {name} failed, skipped", file=sys.stderr)

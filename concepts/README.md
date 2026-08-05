@@ -22,10 +22,12 @@ articles (e.g. NoSQL databases), the article covers the whole step.
 
 | Stage | Concept | Article | Build (prove it by hand) |
 |---|---|---|---|
-| 1 | Python import system | [python-import-system.md](python-import-system.md) | — (drill only) |
+| 1 | Python import system | [python-import-system.md](python-import-system.md) | [python-from-zero](../builds/python-from-zero.md) |
 | 2 | HTTP request/response model | [http-request-response.md](http-request-response.md) | [http-server](../builds/http-server.md) |
 | 3 | Dependency injection in FastAPI | [fastapi-dependency-injection.md](fastapi-dependency-injection.md) | [fastapi-crud](../builds/fastapi-crud.md) |
+| 4 | Authentication & security | [authentication-authorization.md](authentication-authorization.md) | [auth-security](../builds/auth-security.md) |
 | 5 | Transactions & ACID | [transactions-acid.md](transactions-acid.md) | [storage-cache](../builds/storage-cache.md) |
+| 6 | Async work & concurrency | [concurrency-parallelism.md](concurrency-parallelism.md) | [background-worker](../builds/background-worker.md) |
 | 7 | Containers & Docker for a Python API | [containers-docker.md](containers-docker.md) | [production-deploy](../builds/production-deploy.md) |
 
 ## Roadmap catalogue (all 23 steps + security/auth)
@@ -57,6 +59,18 @@ articles (e.g. NoSQL databases), the article covers the whole step.
 | 23 | AI Assisted Coding | [ai-assisted-coding.md](ai-assisted-coding.md) |
 | 24 | Applications (AI features) | [ai-applications.md](ai-applications.md) |
 | 25 | Integration Patterns (AI) | [ai-integration-patterns.md](ai-integration-patterns.md) |
+
+## Workspace additions (not roadmap steps)
+
+Workspace additions indexed in the video-mapped or Core-five tables above, not
+in the roadmap catalogue — they are not roadmap steps:
+
+`backend-first-principles.md`, `what-is-a-backend.md`, `http-request-response.md`,
+`routing.md`, `serialization.md`, `validations-transformations.md`,
+`application-layers.md`, `error-handling-fault-tolerance.md`,
+`configuration-management.md`, `observability.md`, `graceful-shutdown.md`,
+`concurrency-parallelism.md`, `python-import-system.md`,
+`fastapi-dependency-injection.md`, `containers-docker.md`, `transactions-acid.md`
 
 ## Video-mapped concepts (Sriniously ▶1–▶23)
 

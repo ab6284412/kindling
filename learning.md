@@ -38,6 +38,8 @@ looking it up.
   Version Control ([concepts/version-control-git.md](concepts/version-control-git.md)), Repo Hosting
   ([concepts/repo-hosting-services.md](concepts/repo-hosting-services.md)), Learn the Basics (projects)
   ([concepts/learn-the-basics-projects.md](concepts/learn-the-basics-projects.md))
+- **Tick: [builds/python-from-zero.md](builds/python-from-zero.md)** — a stdlib CLI todo app
+  (argparse, JSON persistence, corruption backup), verified by `python3 verify.py build python-foundation`
 
 ### 2. The request/response core `[ ]`
 *"How does a request become a response?"* The question every backend answers:
@@ -51,7 +53,7 @@ lifecycle. Build the whole thing from raw sockets so no framework hides it.
   controllers/services/repositories/middleware/request context
   ([concepts/application-layers.md](concepts/application-layers.md)).
 - **Tick: [builds/http-server.md](builds/http-server.md)** — a stdlib-socket HTTP/1.1 server, no
-  framework.
+  framework, verified by `python3 verify.py stage 2`.
 - Concepts: [concepts/introduction-web-basics.md](concepts/introduction-web-basics.md), [concepts/http-request-response.md](concepts/http-request-response.md)
 - DSA practice: [dsa/stack-queue.md](dsa/stack-queue.md) (deque as the workhorse buffer)
 - Roadmap steps: Introduction ([concepts/introduction-web-basics.md](concepts/introduction-web-basics.md))
@@ -64,7 +66,7 @@ vehicle here, not the topic.
   ▶16 Error Handling and Building Fault Tolerant Systems
   ([concepts/error-handling-fault-tolerance.md](concepts/error-handling-fault-tolerance.md)).
 - **Tick: [builds/fastapi-crud.md](builds/fastapi-crud.md)** — CRUD API with a dependency-injected DB
-  session, hand-written SQL, and error handling.
+  session, hand-written SQL, and error handling, verified by `python3 verify.py stage 3`.
 - Concepts: [concepts/apis-rest-graphql-grpc.md](concepts/apis-rest-graphql-grpc.md), [concepts/architectural-patterns.md](concepts/architectural-patterns.md),
   [concepts/testing.md](concepts/testing.md), [concepts/fastapi-dependency-injection.md](concepts/fastapi-dependency-injection.md) ·
   Drill: the `## Drill` in [concepts/fastapi-dependency-injection.md](concepts/fastapi-dependency-injection.md)
@@ -82,7 +84,7 @@ get APIs pwned.
   ([concepts/authentication-authorization.md](concepts/authentication-authorization.md)), ▶20 Backend
   Security ([concepts/web-security.md](concepts/web-security.md)).
 - **Tick: [builds/auth-security.md](builds/auth-security.md)** — password hashing, token login,
-  ownership checks, and an OWASP review.
+  ownership checks, and an OWASP review, verified by `python3 verify.py stage 4`.
 - Concepts: [concepts/authentication-authorization.md](concepts/authentication-authorization.md), [concepts/web-security.md](concepts/web-security.md)
 - DSA practice: [dsa/hashing.md](dsa/hashing.md) (hash functions, collisions, salts)
 - Roadmap steps: Security ([concepts/web-security.md](concepts/web-security.md)), Authentication
@@ -97,7 +99,7 @@ get APIs pwned.
   ([concepts/caching.md](concepts/caching.md)), ▶15 Full text search using Elasticsearch
   ([concepts/search-engines.md](concepts/search-engines.md)).
 - **Tick: [builds/storage-cache.md](builds/storage-cache.md)** — Postgres behind the CRUD API plus a
-  cache layer with correct invalidation.
+  cache layer with correct invalidation, verified by `python3 verify.py stage 5`.
 - Concepts: [concepts/relational-databases.md](concepts/relational-databases.md), [concepts/nosql-databases.md](concepts/nosql-databases.md),
   [concepts/more-about-databases.md](concepts/more-about-databases.md), [concepts/transactions-acid.md](concepts/transactions-acid.md) ·
   Drill: the `## Drill` in [concepts/transactions-acid.md](concepts/transactions-acid.md), [concepts/caching.md](concepts/caching.md),
@@ -116,7 +118,7 @@ get APIs pwned.
 - Watch: ▶14 Task queues and background jobs ([concepts/message-brokers.md](concepts/message-brokers.md)),
   ▶23 Concurrency & Parallelism ([concepts/concurrency-parallelism.md](concepts/concurrency-parallelism.md)).
 - **Tick: [builds/background-worker.md](builds/background-worker.md)** — a slow operation moved off the
-  request path into a queue + worker, with a completion webhook.
+  request path into a queue + worker, with a completion webhook, verified by `python3 verify.py stage 6`.
 - Concepts: [concepts/message-brokers.md](concepts/message-brokers.md), [concepts/real-time-data.md](concepts/real-time-data.md)
 - DSA practice: [dsa/heaps.md](dsa/heaps.md) (priority queues for job scheduling),
   [dsa/graphs.md](dsa/graphs.md) (dependency graphs)
@@ -135,7 +137,7 @@ get APIs pwned.
   ([concepts/building-for-scale.md](concepts/building-for-scale.md)).
 - **Tick: [builds/production-deploy.md](builds/production-deploy.md)** — containerize, env config, CI,
   logging/metrics, graceful shutdown, then load-test → find the bottleneck →
-  fix → re-measure.
+  fix → re-measure, verified by `python3 verify.py stage 7`.
 - Concepts: [concepts/web-servers.md](concepts/web-servers.md), [concepts/containers-docker.md](concepts/containers-docker.md) ·
   Drill: the `## Drill` in [concepts/containers-docker.md](concepts/containers-docker.md), [concepts/ci-cd.md](concepts/ci-cd.md),
   [concepts/scaling-databases.md](concepts/scaling-databases.md), [concepts/building-for-scale.md](concepts/building-for-scale.md)

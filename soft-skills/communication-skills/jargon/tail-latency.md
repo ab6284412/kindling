@@ -1,6 +1,7 @@
 # Tail latency
 
 Provenance: AI-drafted
+Credits: roadmap.sh, Martin Fowler, Sriniously (@sriniously)
 
 Related: [concepts/building-for-scale.md](../../../concepts/building-for-scale.md), [builds/production-deploy.md](../../../builds/production-deploy.md)
 

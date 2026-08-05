@@ -32,5 +32,33 @@ is the tour: what a backend is, how backends work, and why they exist at all.
 Build: [builds/http-server.md](../builds/http-server.md) — write the request/response
 core by hand so the boundary is concrete, not assumed.
 
+## Drill
+
+Goal: watch one real request/response in the browser DevTools Network tab and
+name which side produced each part.
+
+Steps:
+1. Dependency: a browser. Open https://example.com, then DevTools → Network,
+   and reload.
+2. Click the `example.com` document row. In Headers, read the Request side
+   (`GET` + the URL), then the Response side: status `200` and a `Server` or
+   `Content-Type` header. Every byte of the response was produced by a server,
+   not by your browser.
+3. Look at the Initiator column for the document — it says navigation, i.e.
+   *your browser* started the request. Now answer: which side is the frontend
+   (browser: sends the request) and which is the backend (server: decides and
+   answers).
+
+Self-check (pass/fail):
+- The document entry shows a `GET` request and status `200`, and you can point
+  to one response header the *server* set.
+- You can state in one sentence which parts of the trace the frontend produced
+  (the request) and which the backend produced (the response).
+- You can name two of the layers behind the response (routing, validation,
+  business logic, storage) that this workspace's stages teach.
+
+Why this matters: "the frontend asks, the backend decides" stops being abstract
+the moment you can read a trace and say which side wrote each line.
+
 ## Further reading
 - Sriniously, "What is a Backend, how they work and why" (▶3) — https://www.youtube.com/watch?v=6Ss4dJD9Kzg (Sep 24, 2024)

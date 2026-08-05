@@ -25,7 +25,16 @@ load-test that finds and fixes one real bottleneck.
    `LOG_LEVEL`; the auth build's rule holds: never log secrets.
 6. **Metrics** — a minimal `/metrics` endpoint exposing stdlib-counters
    (request count, a latency histogram via `time`). No Prometheus lib in v1.
-7. **CI (GitHub Actions)** — on push: `ruff check`, `pytest`, `docker build`.
+ 7. **CI (GitHub Actions)** — on push: `ruff check`, `pytest`, `docker build`.
+    GitHub only auto-runs workflows at the **repo root** `.github/workflows/`,
+    so this repo keeps the canonical workflow at
+    `solutions/production-deploy/.github/workflows/ci.yml` (verified by the
+    stage-7 check) and a copy at `.github/workflows/production-deploy.yml`
+    (which GitHub actually runs). Both run `ruff`, `pytest`, `docker build`
+    against the solution dir. A passing run needs: ruff-clean code (add
+    `# noqa` for a deliberate blind catch), at least one pytest file (empty
+    suites exit 5, which is a failure), and no custom `SIGTERM` handler that
+    shadows uvicorn's graceful shutdown.
 8. **Load test** — `wrk`/`hey`/`ab` against the running container. Record a
    baseline (req/s, p50, p95). Find the top bottleneck (cache misses from
    stage 5, the blocking `sleep` from stage 6, an N+1 query), fix it, and
@@ -51,10 +60,10 @@ curl -s localhost:8000/ready    # 200 when DB reachable; 503 when not
 docker run --rm -p 8000:8000 -e LOG_LEVEL=DEBUG api   # DEBUG lines appear
 
 # graceful shutdown — fire traffic, then:
-docker stop <container>         # logs show drain + clean exit, code 0
+docker stop <container>         # stops within the grace period, no SIGKILL (137)
 
 # load test — baseline vs fixed numbers recorded in the build notes:
-wrk -t4 -c50 -d10s http://localhost:8000/todos
+wrk -t4 -c50 -d10s http://localhost:8000/health
 # e.g. before: p95 210ms → after: p95 42ms. Explain the fix in one line.
 ```
 

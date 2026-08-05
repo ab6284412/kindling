@@ -44,6 +44,42 @@ Elasticsearch running in Docker, then write the queries that return ranked,
 fuzzy-tolerant, faceted results — and compare the query time to the same
 search in Postgres.
 
+## Drill
+
+Goal: build a hand-rolled inverted index and prove a term lookup is a single
+dictionary hit — no scanning of every document. Stdlib only.
+
+Steps:
+1. Save this as `inverted_drill.py`:
+   ```python
+   docs = ["the quick brown fox", "quick fox jumps", "lazy dog"]
+
+   inv = {}                                     # term -> set of doc ids
+   for i, d in enumerate(docs):
+       for word in d.split():
+           inv.setdefault(word, set()).add(i)
+
+   for term in ("quick", "fox", "dog", "zebra"):
+       print(f"'{term}' ->", inv.get(term))
+
+   hits = 0                                     # naive scan for comparison
+   for i, d in enumerate(docs):
+       hits += 1 if "fox" in d.split() else 0
+   print("scan finds 'fox' in", hits, "docs, checking all", len(docs))
+   ```
+2. Run `python3 inverted_drill.py`.
+
+Self-check (pass/fail — run it alone): `'quick'` and `'fox'` both print
+`{0, 1}` (each term found in two docs), `'dog'` prints `{2}`, and the absent
+term `'zebra'` prints `None` — all via one dict lookup per term. The contrast
+line shows the naive scan must visit every doc to answer the same question.
+If `inv['quick']` ever misses doc 0, your tokenizer split words differently
+than the documents did — an analyzer mismatch, exactly the real-world failure.
+
+Why this matters: this dict-of-sets *is* an inverted index, and it's the whole
+trick behind Elasticsearch/Solr — index once at write time, answer searches at
+O(1)-ish read time instead of scanning everything.
+
 ## Further reading
 - Sriniously, "Full text search using Elasticsearch" (▶15) — https://www.youtube.com/watch?v=7_sovzAhRSM (Jul 5, 2025)
 - roadmap.sh, https://roadmap.sh/backend — "Search Engines" step

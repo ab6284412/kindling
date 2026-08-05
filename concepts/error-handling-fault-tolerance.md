@@ -38,5 +38,52 @@ Sriniously's ▶16 is the dedicated treatment.
 response, add a safe retry with backoff on a flaky call, and a timeout so a
 stalled dependency surfaces fast.
 
+## Drill
+
+Goal: write a retry-with-exponential-backoff wrapper and prove it retries the
+flaky call exactly as many times as needed, then gives up instead of hanging.
+Stdlib only.
+
+Steps:
+1. Save this as `retry_drill.py`:
+   ```python
+   import time
+
+   def flaky():
+       flaky.calls += 1
+       if flaky.calls < 3:
+           raise ConnectionError("service down")
+       return "ok"
+   flaky.calls = 0
+
+   def retry(fn, attempts=5, delay=0.02):
+       for i in range(attempts):
+           try:
+               return fn()
+           except Exception:
+               time.sleep(delay * 2 ** i)   # backoff grows: 1x, 2x, 4x...
+       return "gave up"
+
+   print(retry(flaky), "| calls:", flaky.calls)          # ok, 3
+
+   def always_fail():
+       raise ValueError("nope")
+   print(retry(always_fail))                              # gave up, not hang
+   ```
+2. Run `python3 retry_drill.py`.
+3. Now make the backoff *no-op* — change the sleep to `time.sleep(delay)`
+   (no `2 ** i`) and print the per-attempt delays. The retries still work,
+   but the hammering pattern is now visible: all calls happen at the same
+   rate regardless of failure.
+
+Self-check (pass/fail — run it alone): the flaky call retried exactly the 2
+failed attempts and succeeded on the 3rd (`ok | calls: 3`), and the
+always-failing call printed `gave up` after 5 attempts instead of hanging
+forever. If your counter reads anything other than 3, your wrapper retried
+the wrong number of times.
+
+Why this matters: retries without backoff are a thundering herd in miniature —
+a failing dependency multiplied by a million requests is an outage, not a fix.
+
 ## Further reading
 - Srinoriously, "Error Handling and Building Fault Tolerant Systems" (▶16) — https://www.youtube.com/watch?v=8NaM_9aKS24 (Jul 8, 2025)

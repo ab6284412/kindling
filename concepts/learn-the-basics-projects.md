@@ -35,6 +35,34 @@ This IS the build step: complete `builds/http-server.md` and the workspace's
 stage projects in `learning.md` — a finished CRUD API beats a ninth
 screenshot of someone else's.
 
+## Drill
+
+Goal: audit which of the roadmap's earlier steps this workspace's learning.md
+already turns into projects.
+
+Steps:
+1. Open `learning.md` (this repo) and read its 7 stages (Python foundation →
+   request/response → API design → auth → storage → async → production).
+2. Open `concepts/README.md` (the stage index) and `learning.md`'s "Walk the
+   path" section.
+3. For each of the first 4 roadmap steps (Introduction, Pick a Language,
+   Version Control, Repo Hosting), write one line: which learning.md stage or
+   `builds/*.md` build covers it, or "uncovered".
+4. In one sentence each, map learning.md's stage projects to roadmap project
+   ideas: notes API → to-do CRUD → URL shortener → auth'd multi-user service.
+
+Self-check (pass/fail):
+- Every one of the 4 roadmap steps has a verdict line ("covered by stage N /
+  builds/X.md" or "uncovered") — no blanks.
+- You can name exactly which learning.md stage is the next one you have not
+  finished, and the build that proves it.
+- You can name one roadmap project idea with no matching learning.md stage —
+  the gap is real; that is breadth, not depth.
+
+Why this matters: the roadmap's whole "Learn the Basics" point is finishing
+projects; the audit tells you which stage to attack next instead of collecting
+tutorials.
+
 ## Further reading
 - roadmap.sh, https://roadmap.sh/backend — "Learn the Basics" step and
   project-ideas track (fetched Aug 3 2026)

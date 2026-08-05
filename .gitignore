@@ -1,8 +1,12 @@
 __pycache__/
 *.pyc
-notes/<date>-digest.md
+notes/<date>-news-digest.md
 state.json
 web/.venv/
 .DS_Store
 .playwright-mcp/
 .hallmark/
+# build-run artifacts (learner projects and reference solutions)
+*.db
+todos.json
+*.bak

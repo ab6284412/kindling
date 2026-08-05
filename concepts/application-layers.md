@@ -38,5 +38,49 @@ shared state through one request. Sriniously's ▶10 walks all of them.
 service with the business rule and a repository wrapping the DB session; add a
 dependency-injected request context via FastAPI's `Depends`.
 
+## Drill
+
+Goal: split one use case into controller/service/repository and thread a
+request context through it — no globals.
+
+Steps:
+1. stdlib. Save `layers.py`:
+   ```python
+   from dataclasses import dataclass
+   @dataclass
+   class Request:
+       user_id: str
+       request_id: str
+   store = []                     # fake "database"
+   def repo_save_order(req, total):            # repository: owns data access
+       store.append({"user_id": req.user_id,
+                     "request_id": req.request_id, "total": total})
+       return len(store) - 1
+   def service_checkout(req, cart):            # service: owns business rule
+       if not cart:
+           return {"error": "cart empty"}
+       return {"order_id": repo_save_order(req, sum(cart))}
+   def controller(req, cart):                  # controller: glue only
+       return service_checkout(req, cart)
+   print(controller(Request("alice", "r1"), [10, 20]))   # {'order_id': 0}
+   print(controller(Request("bob", "r2"), []))            # {'error': 'cart empty'}
+   print(store)
+   ```
+2. Run it: alice's order lands in `store` with her `request_id`; bob's empty
+   cart returns the error *from the service* and writes nothing.
+3. Prove the repository is the only layer that knows the "DB": rewrite
+   `repo_save_order` to write into a `dict` keyed by order id — controller and
+   service change by zero lines.
+
+Self-check (pass/fail):
+- `store` holds exactly one row: `user_id='alice'`, `request_id='r1'` — the
+  request context traveled down without a global.
+- Empty cart → `{'error': 'cart empty'}`, and you can name which layer owns
+  that rule (service, not controller).
+- Swapping the repository's storage (list → dict) touches no other layer.
+
+Why this matters: god controllers and global "current user" are the named
+failure modes; a 20-line layering shows both fixes before they bite in FastAPI.
+
 ## Further reading
 - Sriniously, "Controllers, services, repositories, middlewares, request context" (▶10) — https://www.youtube.com/watch?v=hyc-7w3pee8 (Jan 16, 2025)

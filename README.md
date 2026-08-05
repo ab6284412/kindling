@@ -41,6 +41,9 @@ knowledge/             # evergreen news-lessons — the compounding part
 concepts/              # systematic concept articles (the textbook)
 builds/                # hand-made, full-concept exercises
                        # drills live as ## Drill sections inside concepts/knowledge
+verify.py              # offline verification: build/stage checks, link check, drill-audit
+verify/checks/         # per-build check scripts (run against solutions/<name>)
+solutions/             # reference implementations, one per build (checked by verify.py)
 dsa/                   # interview prep: patterns-first DSA notes (roadmap-ordered)
 soft-skills/           # communication, review, debugging discipline
                        #   communication-skills/jargon/: one term per file
@@ -117,8 +120,9 @@ it yours:
 
 ## The system is the product
 
-One concept per learning stage, a matching drill each, and a handful of news
-notes ship today. That's on purpose:
+41 concept notes across 7 learning stages (each with an embedded drill), 7
+hand-built projects in builds/ with reference solutions and automated checks,
+and a handful of news notes ship today. That's on purpose:
 the value is the *machine* — the workflow, templates, and the
 concept↔build↔drill↔news-signal wiring — not the current content. Students grow
 the content by contributing, and contributing is itself a drill. See

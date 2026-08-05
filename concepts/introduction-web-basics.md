@@ -41,6 +41,37 @@ No build yet. Write, from memory, the sequence of events from typing
 `https://example.com` in a browser to seeing the page — DNS lookup, TCP,
 TLS, HTTP request, server response, rendering. That trace is the test.
 
+## Drill
+
+Goal: resolve a domain to an IP and watch HTTP run on top of TCP to see the
+network layers working.
+
+Steps:
+1. stdlib: `python3 -c "import socket; print(socket.gethostbyname('example.com'))"`
+   — prints an IPv4 like `93.184.216.34`. A domain name is just an alias for
+   that IP; DNS did the lookup.
+2. In a scratch dir run `python3 -m http.server 8126`; in another terminal
+   `curl -v http://localhost:8126/ 2>&1 | grep '^[<>]'`. You see the request
+   line (`GET / HTTP/1.1` — curl negotiates HTTP/1.1) and the status line
+   (`HTTP/1.0 200` — SimpleHTTPRequestHandler answers 1.0); they differ because
+   the client offers the newest protocol it knows while the server replies with
+   the oldest it supports. Either way it's HTTP riding on TCP port 8126.
+3. Make name resolution visible: `curl -v http://localhost:8126/ 2>&1 | grep -i '^> Host'`
+   prints `Host: localhost:8126` — a hostname, not an IP, travels in the
+   request, and the OS resolved `localhost` → `127.0.0.1` before connecting.
+
+Self-check (pass/fail):
+- `gethostbyname` prints a valid IPv4 (4 dotted octets).
+- The `curl -v` output contains both `GET / HTTP/1.1` (request line) and
+  `HTTP/1.0 200` (status line) — you can point at each, and explain why they
+  differ (curl offers HTTP/1.1; Python's SimpleHTTPRequestHandler answers
+  HTTP/1.0).
+- The `Host:` grep shows a hostname, and you can list the layers at play (name
+  resolution, IP, port, HTTP) and say where DNS normally sits in that chain.
+
+Why this matters: "DNS problem vs server down" is a real junior misdiagnosis;
+if you can trace which layer failed, you can point at the right one.
+
 ## Further reading
 - roadmap.sh, https://roadmap.sh/backend — "Introduction" step (fetched
   Aug 3 2026)

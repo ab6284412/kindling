@@ -50,9 +50,50 @@ server patched. See `authentication-authorization.md` for the auth half.
 
 ## Build that proves it
 
-No build yet. The drill: run a test app over HTTP, capture the plaintext
-cookie with a packet capture or devtools, then enable TLS and show it's
-gone — and switch a bcrypt hash of a password into your app.
+Proven by [builds/auth-security.md](../builds/auth-security.md). The drill: run a
+test app over HTTP, capture the plaintext cookie with a packet capture or
+devtools, then enable TLS and show it's gone — and switch a bcrypt hash of a
+password into your app.
+
+## Drill
+
+Goal: craft a SQL injection against a query you wrote with string
+concatenation, watch it fire, then fix it with a parameter. Stdlib only.
+
+Steps:
+1. Save this as `sqli_drill.py`:
+   ```python
+   import sqlite3
+
+   c = sqlite3.connect(":memory:")
+   c.execute("CREATE TABLE users(name TEXT, pass TEXT)")
+   c.execute("INSERT INTO users VALUES ('alice','s3cret'), ('bob','pw')")
+
+   def unsafe_login(name):                       # BAD: f-string into SQL
+       return c.execute(
+           f"SELECT * FROM users WHERE name='{name}'").fetchone()
+
+   def safe_login(name):                         # GOOD: parameterized
+       return c.execute(
+           "SELECT * FROM users WHERE name=?", (name,)).fetchone()
+
+   print("normal:", unsafe_login("alice"))
+   print("injected:", unsafe_login("' OR '1'='1"))
+   print("safe:", safe_login("' OR '1'='1"))
+   ```
+2. Run `python3 sqli_drill.py`.
+
+Self-check (pass/fail — run it alone): `normal` returns Alice's row,
+`injected` also returns Alice's row *even though you never typed her name* —
+that is the injection firing (the `OR '1'='1` made the WHERE always true), and
+`safe` returns `None` for the same input because the quote is data, not code.
+If `safe` ever returns a row for the injected string, your parameterization is
+not actually parameterized.
+
+Why this matters: injection is the #1 item on the OWASP Top Ten precisely
+because it survives in ORMs and frameworks; every trust-boundary query should
+be parameterized by default, and this drill is the mental picture of what
+happens when it isn't.
 
 ## Further reading
 - Sriniously, "Backend Security: Everything You Need" (▶20) — https://www.youtube.com/watch?v=xB1C1xZZW4k (Dec 14, 2025)

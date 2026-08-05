@@ -1,0 +1,17 @@
+name: production-deploy ci
+on: [push, pull_request]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: solutions/production-deploy
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install ruff pytest fastapi uvicorn httpx psycopg[binary]
+      - run: ruff check app.py tests
+      - run: pytest -q
+      - run: docker build -t api .

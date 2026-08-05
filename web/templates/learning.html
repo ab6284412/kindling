@@ -2,7 +2,7 @@
 {% block title %}Learning path — Kindling{% endblock %}
 {% block content %}
 <h1 class="page-title">Learning path</h1>
-<p class="page-count">Five stages · tick a stage when its project is done</p>
+<p class="page-count">{{ stages | length }} stages · tick a stage when its project is done</p>
 
 <ul class="stages">
 {% for name in stages %}

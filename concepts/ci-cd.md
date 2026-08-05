@@ -29,10 +29,56 @@ steps run on every change, and only changes that pass get in.
 
 ## Build that proves it
 
-No build yet. This workspace's stage 5 covers it (Full Stack Open + DevOps
-with Docker). The drill: a `.github/workflows/ci.yml` that runs this
-workspace's unittest suite on push, then a deploy job — one of your own
-APIs.
+Proven by [builds/production-deploy.md](../builds/production-deploy.md) — its CI job
+(`solutions/production-deploy/.github/workflows/ci.yml`) runs this workspace's
+unittest suite on push. This workspace's stage 7 covers it (Full Stack Open +
+DevOps with Docker).
+
+## Drill
+
+Goal: prove a CI pipeline gates merging — a red change fails and stops, a
+green one reaches "deploy" — by running a fake pipeline locally (stdlib).
+
+Steps:
+1. From a scratch dir, create a tiny app and test:
+   `app.py`:
+   ```python
+   def add(a, b): return a + b
+   ```
+   `test_app.py`:
+   ```python
+   import unittest, app
+   class T(unittest.TestCase):
+       def test_add(self): self.assertEqual(app.add(1, 2), 3)
+   if __name__ == "__main__": unittest.main()
+   ```
+2. Save this fake CI as `ci.py` and run `python3 ci.py`:
+   ```python
+   import subprocess, sys
+   stages = [
+       ("lint", ["python3", "-m", "py_compile", "app.py"]),
+       ("test", ["python3", "-m", "unittest", "test_app.py"]),
+   ]
+   for name, cmd in stages:
+       r = subprocess.run(cmd, capture_output=True, text=True)
+       print(f"[{name}] {'PASS' if r.returncode == 0 else 'FAIL'}")
+       if r.returncode != 0:
+           print(r.stdout, r.stderr)
+           sys.exit(1)            # pipeline stops — nothing deploys
+   print("[deploy] shipping...")
+   ```
+3. Break the app (change `add` to `return a - b`), rerun.
+
+Self-check (pass/fail — run it alone):
+- Green run prints `[lint] PASS`, `[test] PASS`, then `[deploy] shipping...`
+  and `echo $?` prints 0.
+- Red run prints `[test] FAIL` and the traceback, never prints `[deploy]`,
+  and exits non-zero — a broken change is mechanically blocked before it
+  ships.
+
+Why this matters: CI's value is enforcement, not convenience — the same
+stages run on every push and only green code gets in; skipping or ignoring
+a red pipeline is how bad changes reach prod.
 
 ## Further reading
 - roadmap.sh, https://roadmap.sh/backend — "CI / CD" step (fetched Aug 3 2026)

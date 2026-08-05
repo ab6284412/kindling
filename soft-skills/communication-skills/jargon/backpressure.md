@@ -1,6 +1,7 @@
 # Backpressure
 
 Provenance: AI-drafted
+Credits: roadmap.sh, RabbitMQ docs, Apache Kafka docs
 
 Related: [concepts/message-brokers.md](../../../concepts/message-brokers.md), [builds/background-worker.md](../../../builds/background-worker.md)
 

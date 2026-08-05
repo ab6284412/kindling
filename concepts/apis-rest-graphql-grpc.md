@@ -51,6 +51,53 @@ checkable by machines (clients, docs, mock servers).
 practice for this section. The REST half: design a REST resource for one of
 your models, then check it against your app's `/openapi.json`.
 
+## Drill
+
+Goal: write a bad REST endpoint and a good one, then prove the difference from
+the client's point of view. Depends on FastAPI + httpx (already installed).
+
+Steps:
+1. From a scratch dir, save this as `rest_drill.py`:
+   ```python
+   from fastapi import FastAPI
+   from fastapi.responses import JSONResponse
+   from fastapi.testclient import TestClient
+
+   app = FastAPI()
+   ITEMS = {1: "laptop"}
+
+   @app.get("/get_item")                     # BAD: verb in URL
+   def bad(id: int):
+       item = ITEMS.get(id)
+       return {"ok": item is not None, "item": item}
+
+   @app.get("/items/{id}")                   # GOOD: resource as noun
+   def good(id: int):
+       if id not in ITEMS:
+           return JSONResponse(status_code=404, content={"error": "not found"})
+       return ITEMS[id]
+
+   c = TestClient(app)
+   print("miss bad ->", c.get("/get_item?id=999").status_code)
+   print("miss good ->", c.get("/items/999").status_code)
+   print("hit good ->", c.get("/items/1").json())
+   print("wrong verb ->", c.post("/items/1").status_code)
+   print("openapi paths ->", sorted(app.openapi()["paths"]))
+   ```
+2. Run `python3 rest_drill.py`.
+
+Self-check (pass/fail — run it alone): the bad endpoint returns `200` for a
+missing item (a miss is indistinguishable from a hit), the good endpoint
+returns `404`, a `POST` to the read resource returns `405`, and `/openapi.json`
+lists *both* routes — `/get_item` and `/items/{id}` — but only `/items/{id}`
+is a resource noun; `/get_item` is a verb-named route (an action in the URL,
+the exact REST anti-pattern). If any of those four differ, the endpoint is
+still REST-in-name-only.
+
+Why this matters: status codes and resource nouns are the API's contract —
+clients, mock servers, and SDKs are generated from `/openapi.json`, so a
+wrong-status API breeds broken retry logic and lies in every client.
+
 ## Further reading
 - Sriniously, "Complete REST API Design" (▶11) — https://www.youtube.com/watch?v=RG6q57DwV8Y (Feb 8, 2025)
 - roadmap.sh, https://roadmap.sh/backend — "Learn about APIs" step

@@ -1,6 +1,7 @@
 """Markdown rendering, content-path safety, and structure parsing."""
 from __future__ import annotations
 
+import html
 import os
 import re
 
@@ -17,6 +18,59 @@ _md = markdown.Markdown(extensions=["fenced_code", "tables", "sane_lists"])
 # Bare URLs -> links (the autolink extension isn't bundled with this Markdown build).
 _URL = re.compile(r"https?://[^\s<)]+")
 _SKIP_TAGS = re.compile(r"<(?:a|pre|code|script|style)\b[^>]*>.*?</(?:a|pre|code|script|style)>", re.S)
+
+# Fenced code blocks at any indentation (python-markdown's fenced_code silently
+# drops fences nested inside list items — the drill format nests them). We pull
+# them out ourselves so code renders even when indented.
+_FENCE_OPEN = re.compile(r"^[ \t]*```([^\n]*)$", re.MULTILINE)
+_FENCE_CLOSE = re.compile(r"^[ \t]*```[ \t]*$", re.MULTILINE)
+
+
+def _extract_code(text: str) -> tuple[str, list[tuple[str, str]]]:
+    """Replace every fenced block with a NUL placeholder; return (text, blocks)."""
+    blocks: list[tuple[str, str]] = []
+    out: list[str] = []
+    pos = 0
+    while True:
+        m = _FENCE_OPEN.search(text, pos)
+        if not m:
+            out.append(text[pos:])
+            break
+        out.append(text[pos : m.start()])
+        rest = text[m.end() :]
+        close = _FENCE_CLOSE.search(rest)
+        if not close:
+            out.append(text[m.start() :])
+            break
+        blocks.append((m.group(1).strip(), rest[: close.start()].strip("\n")))
+        out.append(f"\x00K{len(blocks) - 1}\x00")
+        pos = m.end() + close.end()
+    return "".join(out), blocks
+
+
+# After the markdown pass, rebuild a <pre><code> from a placeholder (content
+# html-escaped, and never passed through _linkify so code URLs stay literal).
+_CODE_PH = re.compile(r"\x00K(\d+)\x00")
+
+
+def _restore_code(html_out: str, blocks: list[tuple[str, str]]) -> str:
+    def repl(m: re.Match) -> str:
+        label, code = blocks[int(m.group(1))]
+        cls = f' class="language-{label}"' if label else ""
+        return f"<pre><code{cls}>{html.escape(code)}</code></pre>"
+
+    return _CODE_PH.sub(repl, html_out)
+
+
+def _scrub(html: str) -> str:
+    """Neutralize inline event handlers and dangerous URL schemes on any tag."""
+    html = re.sub(r'\s+on[a-z]+\s*=\s*"[^"]*"', "", html, flags=re.I)
+    return re.sub(
+        r'\s(href|src)="(?:javascript|data|vbscript):[^"]*"',
+        ' href="#"',
+        html,
+        flags=re.I,
+    )
 
 
 def _linkify(html: str) -> str:
@@ -63,14 +117,22 @@ def _rewrite_links(html: str, base_dir: str) -> str:
 
 
 def render_markdown(text: str, base_dir: str = "") -> str:
-    return _rewrite_links(_linkify(_md.reset().convert(text)), base_dir)
+    # Pull code out first (fenced_code drops list-nested fences), escape raw
+    # HTML in the source so a fetched note can't inject markup (XSS), then
+    # convert and restore the code blocks last so their content stays literal.
+    text, blocks = _extract_code(text)
+    text = text.replace("<", "&lt;")
+    html = _linkify(_md.reset().convert(text))
+    html = _scrub(html)
+    html = _rewrite_links(html, base_dir)
+    return _restore_code(html, blocks)
 
 
 def resolve_content_path(rel: str) -> str | None:
     """Map a URL path like 'concepts/http.md' to an absolute file path, or None.
 
     Only files inside BROWSE_DIRS (and ROOT_FILES) are reachable; any '..' or
-    absolute segment is rejected outright.
+    absolute segment is rejected outright, and symlinks must stay in-repo.
     """
     rel = rel.strip().strip("/")
     if not rel:
@@ -86,9 +148,12 @@ def resolve_content_path(rel: str) -> str | None:
     if not rel.endswith(".md"):
         return None
     path = os.path.join(ROOT, *parts)
-    if not os.path.isfile(path):
+    real = os.path.realpath(path)
+    if not real.startswith(os.path.realpath(ROOT) + os.sep):
         return None
-    return path
+    if not os.path.isfile(real):
+        return None
+    return real
 
 
 def list_content(dirname: str) -> list[str]:
@@ -151,12 +216,18 @@ def _section(text: str, start: str, end: str) -> str | None:
 _SELF_CHECK = r"^\s*Self-check.*?:"
 
 
+def strip_drill_section(text: str) -> str:
+    """Remove a '## Drill' section from a note so the interactive drill card
+    is the single render (the card parses the same content via parse_drill)."""
+    return re.sub(r"^## Drill\s*$.*?(?=^## |\Z)", "", text, flags=re.MULTILINE | re.DOTALL)
+
+
 def parse_drill(text: str) -> dict:
     """Extract title, goal, steps, self_check from a drill's existing markdown."""
     title = "Drill"
     tm = re.search(r"^#\s+(.+)$", text, flags=re.MULTILINE)
     if tm:
-        title = tm.group(1).strip().replace("Drill:", "Drill:").strip()
+        title = tm.group(1).strip()
     return {
         "title": title,
         "goal": _section(text, r"^Goal:\s*", r"^\s*Steps:"),

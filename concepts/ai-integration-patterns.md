@@ -54,6 +54,53 @@ No build yet. The drill: one endpoint that streams a model's answer, with
 the prompt constructed from an embedding search over a small document set
 (RAG), and a structured-output JSON contract on the reply.
 
+## Drill
+
+Goal: prove you can turn raw, unpredictable model output into a validated
+JSON contract — stripping fences, tolerating prose — stdlib only.
+
+Steps:
+1. From a scratch dir, save this as `parse.py` and run `python3 parse.py`:
+   ```python
+   import json, re
+   bt = chr(96)   # a backtick, built at runtime so it can't close this code fence
+   samples = [
+       '{"name": "Ada", "age": 36}',                                # clean
+       bt * 3 + 'json\n{"name": "Bob", "age": 41}\n' + bt * 3,      # fenced
+       'Here you go: {"name": "Cy", "age": 29} hope that helps',    # prose around
+       bt * 3 + 'json\n{"name": "not-quite',                        # broken doc
+   ]
+   def extract(raw):
+       m = re.search(r"\{.*\}", raw, re.S)   # first {...} block
+       if not m:
+           raise ValueError(f"no JSON in: {raw!r}")
+       return json.loads(m.group(0))
+   def validate(d):
+       assert isinstance(d.get("name"), str), "name must be str"
+       assert isinstance(d.get("age"), int), "age must be int"
+       return d
+   for s in samples:
+       try:
+           print("OK  ", validate(extract(s)))
+       except (ValueError, json.JSONDecodeError, AssertionError) as e:
+           print("BAD ", s[:28], "->", e)
+   ```
+2. Read the output.
+
+Self-check (pass/fail — run it alone):
+- The first three samples print `OK` with the parsed dict — fences and
+  surrounding prose are handled, and the same parser works on all of them.
+- The last sample prints `BAD ... -> no JSON in: ...` — it's rejected with a
+  clear error, and you can retry (see the `ai-applications.md` drill) instead
+  of crashing.
+- Add `'{"name": "Dan", "age": "thirty-six"}'` as a sample: it prints
+  `BAD` via the `assert` — a wrong-typed field never reaches your code as an
+  int.
+
+Why this matters: "the model returns JSON" is a lie until you've parsed and
+validated it — structured outputs exist to turn that lie into a contract
+your endpoint can depend on.
+
 ## Further reading
 - roadmap.sh, https://roadmap.sh/backend — "Integration Patterns" step
   (fetched Aug 3 2026)

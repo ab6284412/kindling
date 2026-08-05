@@ -68,8 +68,10 @@ curl -i localhost:8000/me -H "Authorization: Bearer $TOKEN"   # 200, email a@x.i
 
 Then: register two users **b@x.io** and **c@x.io**. As B, `POST /todos`. As C,
 `GET/PATCH/DELETE /todos/{that_id}` → `403`. As B → `200`. Restart uvicorn:
-the session token must now be invalid → `401` on `/me` (proves sessions are
-DB-backed, not stateless).
+the session token must now be invalid → `401` on `/me`. Sessions live in a
+`sessions` table that a fresh boot wipes, so restart revocation is the point —
+a *persistent* session store would keep tokens valid across restart (that is
+the extension, not the baseline).
 
 ## Extensions (only after v1 passes)
 

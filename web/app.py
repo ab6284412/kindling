@@ -47,6 +47,18 @@ def _valid_content(rel: str) -> bool:
     return render.resolve_content_path(rel) is not None
 
 
+def _has_drill(rel: str) -> bool:
+    """A content path is drill-toggleable only if the file actually has a drill."""
+    path = render.resolve_content_path(rel)
+    if path is None:
+        return False
+    try:
+        with open(path, encoding="utf-8") as f:
+            return bool(re.search(r"(?m)^## Drill\s*$", f.read()))
+    except OSError:
+        return False
+
+
 @app.get("/", response_class=HTMLResponse)
 def dashboard(request: Request):
     s = state.load()
@@ -178,7 +190,10 @@ def content(request: Request, path: str):
     context = {
         "path": path,
         "title": _title_of(text),
-        "html": render.render_markdown(text, base_dir=os.path.dirname(path)),
+        "html": render.render_markdown(
+            render.strip_drill_section(text) if is_drill else text,
+            base_dir=os.path.dirname(path),
+        ),
         "drill": drill,
         "is_drill": is_drill,
         "is_readable": path.startswith(READABLE_PREFIXES),
@@ -209,8 +224,8 @@ def api_toggle(body: ToggleBody) -> JSONResponse:
         if not _valid_stage(body.path):
             raise HTTPException(status_code=400, detail="Unknown stage")
     elif body.kind == "drill":
-        if not _valid_content(body.path):
-            raise HTTPException(status_code=400, detail="Unknown content")
+        if not _has_drill(body.path):
+            raise HTTPException(status_code=400, detail="Not a drill")
     elif body.kind == "read":
         if not body.path.startswith(READABLE_PREFIXES) or not _valid_content(body.path):
             raise HTTPException(status_code=400, detail="Not readable content")

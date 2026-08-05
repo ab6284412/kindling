@@ -6,7 +6,15 @@ async function post(url, body) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-  if (!resp.ok) throw new Error((await resp.json()).detail || "request failed");
+  if (!resp.ok) {
+    let detail = "request failed";
+    try {
+      detail = (await resp.json()).detail || detail;
+    } catch (_) {
+      detail = detail + " (" + resp.status + ")";
+    }
+    throw new Error(detail);
+  }
   return resp.json();
 }
 
@@ -27,6 +35,7 @@ document.querySelectorAll(".toggle").forEach((box) => {
 document.querySelectorAll(".reveal").forEach((btn) => {
   btn.addEventListener("click", () => {
     const target = document.getElementById(btn.dataset.target);
+    if (!target) return;
     target.hidden = !target.hidden;
     btn.textContent = target.hidden ? "Reveal self-check" : "Hide self-check";
   });

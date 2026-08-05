@@ -2,6 +2,7 @@
 
 Provenance: AI-drafted — verify every item against its source before treating
 it as fact. Authors credited per item; an item without a source is a rumor.
+Credits: <author names of the source articles>
 
 ## <Source name (e.g. Hacker News front page)>
 - <Title> (<pts>) — <one-line what it is> — by <Author> (link)

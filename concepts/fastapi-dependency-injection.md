@@ -56,9 +56,9 @@ across many endpoints without duplicating code?"
 
 ## Build that proves it
 
-No build yet — planned: a small FastAPI CRUD service exercising `Depends()` +
-an override, dogfooded on this workspace's stack (learning.md stage 4).
-Short rep: the `## Drill` below.
+The stage-3 CRUD service proves it — [builds/fastapi-crud.md](../builds/fastapi-crud.md),
+exercising `Depends()` + an override on this workspace's stack (learning.md
+stage 3). Short rep: the `## Drill` below.
 
 ## Drill
 
@@ -95,8 +95,9 @@ Steps:
    def test_status_is_overridden():
        assert client.get("/status").json() == {"tier": "pro"}
    ```
-   Run with `python -m pytest test_app.py` (install `pytest` + `httpx` in the
-   venv if missing) — the endpoint now returns `"pro"` with zero changes to
+   Run with `python -m pytest test_app.py` — from a venv with
+   fastapi+httpx+pytest installed (`pip install pytest httpx` first; they are
+   not in `web/.venv`) — the endpoint now returns `"pro"` with zero changes to
    the endpoint code.
 4. Deliberately break it once: override with a *different* function than the
    one the endpoint references (e.g. a copy of `get_tier`) and confirm the

@@ -1,6 +1,7 @@
 # Graceful degradation
 
 Provenance: AI-drafted
+Credits: roadmap.sh, Martin Fowler, Mozilla Contributors, Redis docs
 
 Related: [concepts/building-for-scale.md](../../../concepts/building-for-scale.md), [concepts/caching.md](../../../concepts/caching.md)
 

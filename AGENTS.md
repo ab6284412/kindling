@@ -67,7 +67,7 @@ first real pull: some sources need a specific parse, and some are hard-blocked.
 **Automation:** `python3 pull.py` in this folder implements the runbook — HN,
 Lobsters, Anthropic, the Algolia fallback (`python3 pull.py search "topic"`),
 and the blocked-source notes. Run it to seed a digest, then verify before
-citing. `python3 pull.py > notes/$(date +%F)-digest.md`.
+citing. `python3 pull.py > notes/$(date +%F)-news-digest.md`.
 `python3 pull.py digest` auto-summarizes the headlines with a local Ollama
 nano model (`llama3.2:1b`) and writes `notes/<date>-news-digest.md` with
 `## Further reading` URLs from the parsed links (Ollama must be running; if it
@@ -125,7 +125,7 @@ digest.
   source, or turn a lesson into a practice exercise.
 
 ### Notes convention
-- Dated daily digests live in `notes/` (`notes/<date>-digest.md`) and *rot*.
+- Dated daily digests live in `notes/` (`notes/<date>-news-digest.md`) and *rot*.
   Don't re-summarize a topic that already has a knowledge note; link it.
 - Interview-prep areas live in `dsa/` (patterns-first notes, roadmap-ordered
   by its README, puzzles at `dsa/puzzles/`), `soft-skills/` (communication

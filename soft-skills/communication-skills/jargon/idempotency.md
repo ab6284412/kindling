@@ -1,6 +1,7 @@
 # Idempotency
 
 Provenance: AI-drafted
+Credits: roadmap.sh, OpenAPI Initiative, Sebastián Ramírez (FastAPI docs)
 
 Related: [concepts/apis-rest-graphql-grpc.md](../../../concepts/apis-rest-graphql-grpc.md), [builds/fastapi-crud.md](../../../builds/fastapi-crud.md)
 
