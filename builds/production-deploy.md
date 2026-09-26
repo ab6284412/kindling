@@ -1,5 +1,6 @@
 # Build: production, ops & scale — run it like a service
-Source: [concepts/containers-docker.md](../concepts/containers-docker.md), [concepts/ci-cd.md](../concepts/ci-cd.md),
+Source: [concepts/containers-docker.md](../concepts/containers-docker.md), [concepts/docker-compose.md](../concepts/docker-compose.md),
+[concepts/ci-cd.md](../concepts/ci-cd.md),
 [concepts/building-for-scale.md](../concepts/building-for-scale.md), and Sriniously's playlist videos ▶17
 (Config management), ▶18 (Observability), ▶19 (Graceful shutdown), ▶21 (Scaling
 Part-1), ▶22 (Scaling Part-2)
@@ -70,6 +71,8 @@ wrk -t4 -c50 -d10s http://localhost:8000/health
 ## Extensions (only after v1 passes)
 
 - Prometheus + Grafana dashboards for `/metrics`; alert on p95 (▶18).
+- Compose stack (`compose.yaml`: app + Postgres + a Redis cache) replacing the
+  single `docker run` — see [concepts/docker-compose.md](../concepts/docker-compose.md).
 - Kubernetes/ECS deployment with rolling deploys (▶21, ▶22).
 - Distributed trace ids across services.
 - Autoscaling driven by p95 latency.

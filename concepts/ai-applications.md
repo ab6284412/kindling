@@ -17,6 +17,9 @@ refactoring** with AI help. The "how to ship AI features" track.
   backend; each has a docs/SDK story and different models/pricing/latency.
 - **Refactoring** — using AI to restructure code; the safest AI task
   because behavior is (supposed to be) unchanged and tests can verify it.
+- **RAG / vectors / embeddings / agents / skills / MCP** — the retrieval
+  and tool-calling stack the roadmap files under this step; full treatment
+  in [ai-integration-patterns.md](ai-integration-patterns.md).
 
 ## How it works
 

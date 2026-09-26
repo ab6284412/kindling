@@ -12,11 +12,13 @@ Every concept article is **AI-drafted and must be verified against its Further r
 credited. If a claim survives only in this repo and not in a cited source, it
 is a mistake waiting to be found.
 
-The catalogue below mirrors the [roadmap.sh Backend Roadmap](https://roadmap.sh/backend)
-(fetched Aug 3 2026): 23 roadmap steps, plus the roadmap's Security and
-Authentication clusters treated as their own articles. Step → concept mapping
-follows the roadmap's own grouping; where a roadmap step spans multiple
-articles (e.g. NoSQL databases), the article covers the whole step.
+The catalogue below is ordered as the **learning roadmap** — the same stage
+sequence as [learning.md](../learning.md), not roadmap.sh's number order. Every
+roadmap step keeps its step number (`#`) for roadmap reference; `—` marks a
+workspace addition (a concept added beyond the roadmap, indexed as its own
+article). The Subtopics column lists each step's child nodes from the
+[roadmap.sh Backend Roadmap](https://roadmap.sh/backend) JSON (fetched Aug 6 2026);
+workspace additions carry no roadmap subtopics.
 
 ## Core five (the workspace's stack, in learning order)
 
@@ -30,47 +32,57 @@ articles (e.g. NoSQL databases), the article covers the whole step.
 | 6 | Async work & concurrency | [concurrency-parallelism.md](concurrency-parallelism.md) | [background-worker](../builds/background-worker.md) |
 | 7 | Containers & Docker for a Python API | [containers-docker.md](containers-docker.md) | [production-deploy](../builds/production-deploy.md) |
 
-## Roadmap catalogue (all 23 steps + security/auth)
+## Learning roadmap (all concepts, in stage order)
 
-| # | Roadmap step | Article |
-|---|---|---|
-| 1 | Introduction (how the web works) | [introduction-web-basics.md](introduction-web-basics.md) |
-| 2 | Pick a Backend Language | [backend-languages.md](backend-languages.md) |
-| 3 | Version Control Systems | [version-control-git.md](version-control-git.md) |
-| 4 | Repo Hosting Services | [repo-hosting-services.md](repo-hosting-services.md) |
-| 5 | Relational Databases | [relational-databases.md](relational-databases.md) |
-| 6 | NoSQL Databases | [nosql-databases.md](nosql-databases.md) |
-| 7 | More about Databases | [more-about-databases.md](more-about-databases.md) |
-| 8 | Scaling Databases | [scaling-databases.md](scaling-databases.md) |
-| 9 | Learn about APIs | [apis-rest-graphql-grpc.md](apis-rest-graphql-grpc.md) |
-| 10 | Caching | [caching.md](caching.md) |
-| 11 | Testing | [testing.md](testing.md) |
-| 12 | CI / CD | [ci-cd.md](ci-cd.md) |
-| 13 | Architectural Patterns | [architectural-patterns.md](architectural-patterns.md) |
-| 14 | Message Brokers | [message-brokers.md](message-brokers.md) |
-| 15 | Learn about Web Servers | [web-servers.md](web-servers.md) |
-| 16 | Building For Scale | [building-for-scale.md](building-for-scale.md) |
-| 17 | Security (roadmap cluster) | [web-security.md](web-security.md) |
-| 18 | Authentication (roadmap cluster) | [authentication-authorization.md](authentication-authorization.md) |
-| 19 | Real-Time Data | [real-time-data.md](real-time-data.md) |
-| 20 | Search Engines | [search-engines.md](search-engines.md) |
-| 21 | Frontend Basics | [frontend-basics.md](frontend-basics.md) |
-| 22 | Learn the Basics (projects) | [learn-the-basics-projects.md](learn-the-basics-projects.md) |
-| 23 | AI Assisted Coding | [ai-assisted-coding.md](ai-assisted-coding.md) |
-| 24 | Applications (AI features) | [ai-applications.md](ai-applications.md) |
-| 25 | Integration Patterns (AI) | [ai-integration-patterns.md](ai-integration-patterns.md) |
+| Stage | # | Concept | Subtopics | Article |
+|---|---|---|---|---|
+| Pre-path | — | Backend from first principles | ▶1 roadmap, ▶2 walk the path, ▶4 why first principles | [backend-first-principles.md](backend-first-principles.md) |
+| **1 · Language foundation** | — | Python import system | modules, packages, `sys.path`, relative imports, `__main__` | [python-import-system.md](python-import-system.md) |
+| | 2 | Pick a Backend Language | Python, Java, JavaScript, Go, Ruby, C#, PHP, Rust | [backend-languages.md](backend-languages.md) |
+| | 3 | Version Control Systems | Git | [version-control-git.md](version-control-git.md) |
+| | 4 | Repo Hosting Services | GitHub, GitLab | [repo-hosting-services.md](repo-hosting-services.md) |
+| | 22 | Learn the Basics (projects) | Beginner/Intermediate project ideas, How LLMs work, AI vs Traditional Coding, Embeddings, Vectors | [learn-the-basics-projects.md](learn-the-basics-projects.md) |
+| **2 · Request/response core** | 1 | Introduction (how the web works) | How the internet works, What is HTTP, What is a domain name, What is hosting, DNS, How browsers work | [introduction-web-basics.md](introduction-web-basics.md) |
+| | — | What is a backend | the backend boundary, ▶3 | [what-is-a-backend.md](what-is-a-backend.md) |
+| | — | HTTP request/response | request line, status codes, statelessness, ▶5 | [http-request-response.md](http-request-response.md) |
+| | — | Routing | method+path → handler, route order, ▶6 | [routing.md](routing.md) |
+| | — | Serialization & deserialization | JSON, schema-as-contract, ▶7 | [serialization.md](serialization.md) |
+| | — | Validations & transformations | validate raw → transform, ▶9 | [validations-transformations.md](validations-transformations.md) |
+| | — | Application layers | controllers/services/repositories/middleware/request context, ▶10 | [application-layers.md](application-layers.md) |
+| **3 · API design & reliability** | 9 | Learn about APIs | REST, JSON APIs, SOAP, gRPC, GraphQL, Open API Specs | [apis-rest-graphql-grpc.md](apis-rest-graphql-grpc.md) |
+| | 11 | Testing | Unit, Integration, Functional | [testing.md](testing.md) |
+| | 13 | Architectural Patterns | Monolith, SOA, Microservices, Service Mesh, Twelve-Factor Apps, Serverless | [architectural-patterns.md](architectural-patterns.md) |
+| | — | FastAPI dependency injection | `Depends()`, sub-dependencies, overrides | [fastapi-dependency-injection.md](fastapi-dependency-injection.md) |
+| | — | Error handling & fault tolerance | timeouts, retries, backoff, circuit breakers, ▶16 | [error-handling-fault-tolerance.md](error-handling-fault-tolerance.md) |
+| **4 · Auth & security** | 17 | Security (roadmap cluster) | OWASP Risks, HTTPS, SSL/TLS, CORS, CSP, Server Security, Hashing (MD5/SHA/scrypt/bcrypt) | [web-security.md](web-security.md) |
+| | 18 | Authentication (roadmap cluster) | JWT, Basic/Token/Cookie Auth, OAuth, OpenID, SAML | [authentication-authorization.md](authentication-authorization.md) |
+| **5 · State & storage** | 5 | Relational Databases | PostgreSQL, MySQL, MariaDB, SQLite, MS SQL, Oracle | [relational-databases.md](relational-databases.md) |
+| | 6 | NoSQL Databases | Document/Key-Value/Graph/Column/Time-Series + engines (Redis, MongoDB, DynamoDB, Cassandra, Neo4j, InfluxDB, …) | [nosql-databases.md](nosql-databases.md) |
+| | 7 | More about Databases | ORMs, Normalization, ACID, Transactions, Failure Modes, Profiling Performance, N+1 Problem, Migrations | [more-about-databases.md](more-about-databases.md) |
+| | 10 | Caching | Redis, Memcached, HTTP Caching | [caching.md](caching.md) |
+| | 20 | Search Engines | Elasticsearch, Solr | [search-engines.md](search-engines.md) |
+| | — | Transactions & ACID | atomicity, isolation, durability, savepoints | [transactions-acid.md](transactions-acid.md) |
+| **6 · Async work & concurrency** | 14 | Message Brokers | RabbitMQ, Kafka, LXC (containerization) | [message-brokers.md](message-brokers.md) |
+| | 19 | Real-Time Data | WebSockets, Server-Sent Events, Long/Short Polling | [real-time-data.md](real-time-data.md) |
+| | — | Concurrency & parallelism | IO- vs CPU-bound, GIL, threads/processes/async, ▶23 | [concurrency-parallelism.md](concurrency-parallelism.md) |
+| **7 · Production, ops & scale** | 8 | Scaling Databases | Database Indexes, Data Replication, Sharding Strategies, CAP Theorem | [scaling-databases.md](scaling-databases.md) |
+| | 12 | CI / CD | GitHub Actions, GitLab CI (pipeline automation) | [ci-cd.md](ci-cd.md) |
+| | 15 | Learn about Web Servers | Nginx, Apache, Caddy, MS IIS | [web-servers.md](web-servers.md) |
+| | 16 | Building For Scale | Graceful Degradation, Throttling, Backpressure, Load Shifting, Circuit Breaker, Instrumentation/Monitoring/Telemetry | [building-for-scale.md](building-for-scale.md) |
+| | — | Configuration management | 12-factor config, env vars, validate at boot, ▶17 | [configuration-management.md](configuration-management.md) |
+| | — | Observability | logs, metrics, tracing, ▶18 | [observability.md](observability.md) |
+| | — | Graceful shutdown | SIGTERM, drain, deadline, ▶19 | [graceful-shutdown.md](graceful-shutdown.md) |
+| | — | Containers & Docker | Dockerfile, layers, images, k8s | [containers-docker.md](containers-docker.md) |
+| | — | Docker Compose | services, networks, volumes, `compose up`/`down` | [docker-compose.md](docker-compose.md) |
+| **Parallel · optional** | 21 | Frontend Basics | HTML, CSS | [frontend-basics.md](frontend-basics.md) |
+| | 23 | AI Assisted Coding | Copilot, Cursor, Claude Code, Antigravity, Prompting Techniques, Code Reviews, Documentation Generation, Refactoring | [ai-assisted-coding.md](ai-assisted-coding.md) |
+| | 24 | Applications (AI features) | OpenAI, Anthropic, Gemini, RAGs, Vectors, Embeddings, Agents, Skills, MCP | [ai-applications.md](ai-applications.md) |
+| | 25 | Integration Patterns (AI) | Streaming, Structured Outputs, Function Calling | [ai-integration-patterns.md](ai-integration-patterns.md) |
+| | — | System design | the sibling interview track: trade-offs, components, sizing | [system-design.md](system-design.md) |
 
-## Workspace additions (not roadmap steps)
-
-Workspace additions indexed in the video-mapped or Core-five tables above, not
-in the roadmap catalogue — they are not roadmap steps:
-
-`backend-first-principles.md`, `what-is-a-backend.md`, `http-request-response.md`,
-`routing.md`, `serialization.md`, `validations-transformations.md`,
-`application-layers.md`, `error-handling-fault-tolerance.md`,
-`configuration-management.md`, `observability.md`, `graceful-shutdown.md`,
-`concurrency-parallelism.md`, `python-import-system.md`,
-`fastapi-dependency-injection.md`, `containers-docker.md`, `transactions-acid.md`
+`system-design.md` is the sibling-track note: the roadmap links it as a button
+to [roadmap.sh/system-design](https://roadmap.sh/system-design), so it is a
+companion to the [DSA/interview track](../dsa/README.md), not a roadmap step.
 
 ## Video-mapped concepts (Sriniously ▶1–▶23)
 

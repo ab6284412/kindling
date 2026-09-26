@@ -7,7 +7,7 @@ Provenance: AI-drafted · Credits: roadmap.sh, PostgreSQL Global Development Gro
 The roadmap's fifth step: the database that stores your app's data in
 **tables** with **rows and columns**, enforces relationships between tables
 (foreign keys), and queries them with **SQL**. The roadmap names
-PostgreSQL (recommended), MySQL, MS SQL, Oracle, and MariaDB.
+PostgreSQL (recommended), MySQL, SQLite, MS SQL, Oracle, and MariaDB.
 
 ## The concepts
 
@@ -15,6 +15,9 @@ PostgreSQL (recommended), MySQL, MS SQL, Oracle, and MariaDB.
   the workspace's stack. Personal recommendation.
 - **MySQL** — the most widely deployed open-source RDBMS; the "good enough,
   everywhere" option.
+- **SQLite** — embedded, zero-config, one file, no server; not for
+  concurrent production traffic, but the fastest way to prototype and the
+  engine every stdlib drill in this workspace uses.
 - **MariaDB** — a MySQL fork, drop-in compatible, community-maintained.
 - **MS SQL Server** — Microsoft's enterprise RDBMS (T-SQL dialect).
 - **Oracle** — legacy enterprise incumbent, expensive, still everywhere in

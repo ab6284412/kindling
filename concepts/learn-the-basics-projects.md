@@ -21,6 +21,10 @@ language, build lots of projects) and "Server Side" / "Containerization" /
 - **The meta-lesson** — "you may never need most of these [topics]; just
   know what they are and when to use them." Depth on the fundamentals,
   breadth on the catalogue.
+- **How LLMs work / AI vs traditional coding / embeddings / vectors** — the
+  AI-fundamentals the roadmap files under this step; covered in
+  `ai-assisted-coding.md` (how LLMs work, AI vs traditional coding) and
+  `ai-integration-patterns.md` (embeddings, vectors).
 
 ## How it fails (review checklist)
 

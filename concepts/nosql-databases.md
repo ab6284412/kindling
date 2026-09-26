@@ -26,6 +26,13 @@ ScyllaDB, and DGraph.
 - **Realtime:** RethinkDB, Firebase Realtime Database — push updates to
   clients.
 
+## Adjacent (optional)
+
+The roadmap hangs a **Basic Operations Skills** button off this step — it's a
+link to the [DevOps beginner track](https://roadmap.sh/devops?r=devops-beginner),
+not a subtopic. The roadmap itself warns "you may never need most of these,
+just know what they are." Skip until ops is your job.
+
 ## How it works
 
 NoSQL is a category of *trades*, not one technology. The unifying idea: give
@@ -91,5 +98,7 @@ username.
 ## Further reading
 - roadmap.sh, https://roadmap.sh/backend — "NoSQL Databases" step
   (fetched Aug 3 2026)
+- roadmap.sh, https://roadmap.sh/devops?r=devops-beginner — DevOps beginner
+  track (Basic Operations Skills button, fetched Aug 6 2026)
 - Redis docs, https://redis.io/docs/ (fetched Aug 3 2026)
 - MongoDB docs, https://www.mongodb.com/docs/ (fetched Aug 3 2026)

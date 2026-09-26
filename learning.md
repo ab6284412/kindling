@@ -163,7 +163,9 @@ DSA + interview prep — patterns-first (NeetCode/Blind-75 style), the 13
 - Prep companions: [soft-skills/](soft-skills/) (debugging, questions, review
   etiquette, plus the [jargon glossary](soft-skills/communication-skills/jargon/)),
   [interview puzzles](dsa/puzzles/) (interview-style reasoning problems, tied
-  into the pattern notes).
+  into the pattern notes), and [system design](concepts/system-design.md)
+  (the roadmap's sibling track, for the design round — concepts, trade-offs,
+  and a sizing drill; junior interviews usually skip it, mid-level+ don't).
 - Optional roadmap steps: Frontend Basics ([concepts/frontend-basics.md](concepts/frontend-basics.md)),
   AI Assisted Coding ([concepts/ai-assisted-coding.md](concepts/ai-assisted-coding.md)), AI Applications +
   integration patterns ([concepts/ai-applications.md](concepts/ai-applications.md),
