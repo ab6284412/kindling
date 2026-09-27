@@ -3,8 +3,9 @@
 The app must import and serve /health even with no DATABASE_URL configured —
 that's the degraded path CI can always run.
 """
-from app import app
 from fastapi.testclient import TestClient
+
+from app import app
 
 client = TestClient(app)
 
